@@ -6,7 +6,7 @@ Composer package containing core functionality that is used on BuiltNorth WordPr
 
 This library is meant to be dropped into a theme or plugin via composer.
 
-You can install this package via Composer: `composer require builtnorth/wp-baseline`/
+You can install this package via Composer: `composer require builtnorth/wp-baseline`.
 
 ## Disclaimer
 
