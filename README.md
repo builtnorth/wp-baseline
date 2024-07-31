@@ -1,4 +1,4 @@
-# Built Core Package
+# WP Baseline
 
 Composer package containing core functionality that is used on BuiltNorth WordPress sites. Adds security and hardening features and cleans up some default functionality.
 
