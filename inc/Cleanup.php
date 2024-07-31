@@ -50,12 +50,12 @@ class Cleanup
 	public function replace_wordpress_howdy($wp_admin_bar)
 	{
 		$my_account = $wp_admin_bar->get_node('my-account');
-		if ($my_account) {
-			$newtext = preg_replace('/^Howdy,\s*/', '', $my_account->title);
-			$wp_admin_bar->add_node([
+		if (isset($my_account->title)) {
+			$newtitle = str_replace('Howdy,', '', $my_account->title);
+			$wp_admin_bar->add_node(array(
 				'id' => 'my-account',
-				'title' => $newtext,
-			]);
+				'title' => $newtitle,
+			));
 		}
 	}
 
