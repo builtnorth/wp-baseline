@@ -2,11 +2,27 @@
 
 Composer package containing core functionality that is used on BuiltNorth WordPress sites. Adds security and hardening features and cleans up some default functionality.
 
+## Requirements
+- PHP >= 8.1
+- WordPress >= 6.4
+
 ## Installation
 
 This library is meant to be dropped into a theme or plugin via composer.
 
-You can install this package via Composer: `composer require builtnorth/wp-baseline`.
+1. In your WordPress project directory, run: `composer require builtnorth/wp-baseline`.
+2. In your main plugin file or theme's functions.php, add:
+```php
+use BuiltNorth\Baseline\Core;
+
+if (class_exists('BuiltNorth\Baseline\Core')) {
+    Core::boot();
+}
+```
+
+## Features 
+- Cleanup of unnessary WordPress functionality.
+- Enhanced security measures.
 
 ## Disclaimer
 
