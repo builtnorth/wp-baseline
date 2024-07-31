@@ -7,11 +7,11 @@
  *
  * Further secure and harden WordPress
  * 
- * @package Core
- * @since Core 1.0.0
+ * @package Baseline
+ * @since Baseline 1.0.0
  */
 
-namespace BuiltNorth\Core;
+namespace BuiltNorth\Baseline;
 
 /**
  * If called directly, abort.
@@ -47,7 +47,7 @@ class Security
 	 */
 	public function remove_wp_version_footer()
 	{
-		remove_filter('update_footer', 'core_update_footer');
+		remove_filter('update_footer', 'Baseline_update_footer');
 	}
 
 	/**

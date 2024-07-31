@@ -7,12 +7,12 @@
  *
  * Main class to initialize all other classes
  *
- * @package Core
- * @since Core 4.3.1
+ * @package Baseline
+ * @since Baseline 4.3.1
  *
  */
 
-namespace BuiltNorth\Core;
+namespace BuiltNorth\Baseline;
 
 /**
  * If called directly, abort.

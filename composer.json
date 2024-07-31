@@ -1,5 +1,5 @@
 {
-    "name": "builtnorth/core",
+    "name": "builtnorth/wp-baseline",
     "description": "Core functionality that is used on BuiltNorth WordPress sites. Adds security and hardening features and cleans up some default functionality.",
     "type": "library",
     "license": "GPL-2.0-or-later",
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BuiltNorth\\Core\\": "inc/"
+            "BuiltNorth\\Baseline\\": "inc/"
         }
     },
     "config": {

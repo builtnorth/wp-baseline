@@ -7,11 +7,11 @@
  *
  * Clean up WordPress and remove unneeded functionality
  *
- * @package Core
- * @since Core 1.0.0
+ * @package Baseline
+ * @since Baseline 1.0.0
  */
 
-namespace BuiltNorth\Core;
+namespace BuiltNorth\Baseline;
 
 /**
  * If called directly, abort.
