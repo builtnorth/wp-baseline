@@ -1,6 +1,6 @@
 {
     "name": "builtnorth/core",
-    "description": "Core functionality for WordPress sites. Adds security and hardening features and cleans up some default functionality.",
+    "description": "Core functionality that is used on BuiltNorth WordPress sites. Adds security and hardening features and cleans up some default functionality.",
     "type": "library",
     "license": "GPL-2.0-or-later",
     "authors": [

@@ -1,6 +1,6 @@
-# Built Core Library
+# Built Core Package
 
-Core functionality library for BuiltNorth WordPress sites. Provides functions for security hardening and cleaning up default WordPress functionality.
+Composer package containing core functionality that is used on BuiltNorth WordPress sites. Adds security and hardening features and cleans up some default functionality.
 
 ## Installation
 
