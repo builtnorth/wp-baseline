@@ -24,43 +24,45 @@ class Cleanup
 {
 	public function init()
 	{
-		add_filter('admin_bar_menu', [$this, 'replaceWordpressHowdy'], 25);
-		add_action('wp_before_admin_bar_render', [$this, 'removeWpIconAdminBar']);
-		add_action('login_head', [$this, 'customLoginLogo'], 100);
-		add_filter('login_headerurl', [$this, 'updateLoginLogoUrl']);
-		add_filter('login_headertext', [$this, 'updateLoginLogoText']);
-		add_filter('wp_mail_from_name', [$this, 'mailFromName']);
-		add_filter('wp_mail_from', [$this, 'mailFromEmail']);
-		add_filter('auto_core_update_send_email', [$this, 'disableAutoUpdateEmails']);
-		add_filter('auto_plugin_update_send_email', [$this, 'disableAutoUpdateEmails']);
-		add_filter('auto_theme_update_send_email', [$this, 'disableAutoUpdateEmails']);
-		add_action('init', [$this, 'removeActionsFromHead']);
-		add_action('widgets_init', [$this, 'unregisterWidgets'], 11);
-		add_action('after_setup_theme', [$this, 'removeWidgetsThemeSupport']);
-		add_action('admin_menu', [$this, 'removeMetaboxes']);
-		add_action('admin_init', [$this, 'removeDashboards']);
-		add_action('init', [$this, 'disableEmojis']);
-		add_filter('tiny_mce_plugins', [$this, 'disableEmojisTinymce']);
-		add_filter('wp_resource_hints', [$this, 'disableEmojisRemoveDnsPrefetch'], 10, 2);
+		add_filter('admin_bar_menu', [$this, 'replace_wordpress_howdy'], 9992);
+		add_action('wp_before_admin_bar_render', [$this, 'remove_wp_icon_admin_bar']);
+		add_action('login_head', [$this, 'custom_login_logo'], 100);
+		add_filter('login_headerurl', [$this, 'update_login_logo_url']);
+		add_filter('login_headertext', [$this, 'update_login_logo_text']);
+		add_filter('wp_mail_from_name', [$this, 'mail_from_name']);
+		add_filter('wp_mail_from', [$this, 'mail_from_email']);
+		add_filter('auto_core_update_send_email', [$this, 'disable_auto_update_emails']);
+		add_filter('auto_plugin_update_send_email', [$this, 'disable_auto_update_emails']);
+		add_filter('auto_theme_update_send_email', [$this, 'disable_auto_update_emails']);
+		add_action('init', [$this, 'remove_actions_from_head']);
+		add_action('widgets_init', [$this, 'unregister_widgets'], 11);
+		add_action('after_setup_theme', [$this, 'remove_widgets_theme_support']);
+		add_action('admin_menu', [$this, 'remove_metaboxes']);
+		add_action('admin_init', [$this, 'remove_dashboards']);
+		add_action('init', [$this, 'disable_emojis']);
+		add_filter('tiny_mce_plugins', [$this, 'disable_emojis_tinymce']);
+		add_filter('wp_resource_hints', [$this, 'disable_emojis_remove_dns_prefetch'], 10, 2);
 	}
 
 	/**
 	 * Remove/Change "Howdy" text in admin menu
 	 */
-	public function replaceWordpressHowdy($wp_admin_bar)
+	public function replace_wordpress_howdy($wp_admin_bar)
 	{
 		$my_account = $wp_admin_bar->get_node('my-account');
-		$newtext = str_replace('Howdy,', '', $my_account->title);
-		$wp_admin_bar->add_node([
-			'id' => 'my-account',
-			'title' => $newtext,
-		]);
+		if ($my_account) {
+			$newtext = preg_replace('/^Howdy,\s*/', '', $my_account->title);
+			$wp_admin_bar->add_node([
+				'id' => 'my-account',
+				'title' => $newtext,
+			]);
+		}
 	}
 
 	/**
 	 * Remove the WP logo from the admin bar
 	 */
-	public function removeWpIconAdminBar()
+	public function remove_wp_icon_admin_bar()
 	{
 		global $wp_admin_bar;
 		$wp_admin_bar->remove_menu("wp-logo");
@@ -69,7 +71,7 @@ class Cleanup
 	/**
 	 * Update login logo image
 	 */
-	public function customLoginLogo()
+	public function custom_login_logo()
 	{
 		if (has_custom_logo()) :
 			$image = wp_get_attachment_image_src(get_option('site_logo'), 'full');
@@ -91,7 +93,7 @@ class Cleanup
 	/**
 	 * Update login logo link URL
 	 */
-	public function updateLoginLogoUrl()
+	public function update_login_logo_url()
 	{
 		return home_url();
 	}
@@ -99,7 +101,7 @@ class Cleanup
 	/**
 	 * Update login logo link title
 	 */
-	public function updateLoginLogoText()
+	public function update_login_logo_text()
 	{
 		return get_option("blogname");
 	}
@@ -107,7 +109,7 @@ class Cleanup
 	/**
 	 * Change WP Mail from name
 	 */
-	public function mailFromName()
+	public function mail_from_name()
 	{
 		return get_option("blogname");
 	}
@@ -115,7 +117,7 @@ class Cleanup
 	/**
 	 * Change WP Mail from email address
 	 */
-	public function mailFromEmail()
+	public function mail_from_email()
 	{
 		return get_option("admin_email");
 	}
@@ -123,7 +125,7 @@ class Cleanup
 	/**
 	 * Disable auto update emails
 	 */
-	public function disableAutoUpdateEmails()
+	public function disable_auto_update_emails()
 	{
 		return false;
 	}
@@ -131,7 +133,7 @@ class Cleanup
 	/**
 	 * Remove unnecessary code from wp_head
 	 */
-	public function removeActionsFromHead()
+	public function remove_actions_from_head()
 	{
 		remove_action('wp_head', 'rsd_link');
 		remove_action('wp_head', 'wp_generator');
@@ -150,7 +152,7 @@ class Cleanup
 	/**
 	 * Unregister all widgets
 	 */
-	public function unregisterWidgets()
+	public function unregister_widgets()
 	{
 		unregister_widget('WP_Widget_Archives');
 		unregister_widget('WP_Widget_Calendar');
@@ -175,7 +177,7 @@ class Cleanup
 	/**
 	 * Remove widgets from block editor
 	 */
-	public function removeWidgetsThemeSupport()
+	public function remove_widgets_theme_support()
 	{
 		remove_theme_support('widgets-block-editor');
 		add_filter('use_widgets_block_editor', '__return_false');
@@ -185,7 +187,7 @@ class Cleanup
 	/**
 	 * Remove default meta boxes
 	 */
-	public function removeMetaboxes()
+	public function remove_metaboxes()
 	{
 		remove_meta_box('commentstatusdiv', 'page', 'normal');
 		remove_meta_box('commentsdiv', 'page', 'normal');
@@ -195,7 +197,7 @@ class Cleanup
 	/**
 	 * Remove dashboards
 	 */
-	public function removeDashboards()
+	public function remove_dashboards()
 	{
 		remove_action('welcome_panel', 'wp_welcome_panel');
 		remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
@@ -212,7 +214,7 @@ class Cleanup
 	/**
 	 * Remove emoji filter & action hooks
 	 */
-	public function disableEmojis()
+	public function disable_emojis()
 	{
 		remove_action('wp_head', 'print_emoji_detection_script', 7);
 		remove_action('admin_print_scripts', 'print_emoji_detection_script');
@@ -226,7 +228,7 @@ class Cleanup
 	/**
 	 * Disable tinyMCE emojis
 	 */
-	public function disableEmojisTinymce($plugins)
+	public function disable_emojis_tinymce($plugins)
 	{
 		if (is_array($plugins)) {
 			return array_diff($plugins, ['wpemoji']);
@@ -238,7 +240,7 @@ class Cleanup
 	/**
 	 * Remove emoji CDN hostname from DNS prefetching hints.
 	 */
-	public function disableEmojisRemoveDnsPrefetch($urls, $relation_type)
+	public function disable_emojis_remove_dns_prefetch($urls, $relation_type)
 	{
 		if ('dns-prefetch' == $relation_type) {
 			// This filter is documented in wp-includes/formatting.php
