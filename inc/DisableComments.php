@@ -5,7 +5,7 @@
  * Class: DisableComments
  * ------------------------------------------------------------------
  *
- * Disables all commenting functionality
+ * Disables all commenting functionality in WordPress
  * 
  * @link https://github.com/prolific-digital/wp-disable-comments/blob/main/index.php
  *
@@ -14,9 +14,7 @@
  * 
  **/
 
-
 namespace BuiltNorth\Baseline;
-
 
 /**
  * If this file is called directly, abort.
@@ -25,21 +23,28 @@ if (!defined('WPINC')) {
 	die;
 }
 
-
 class DisableComments
 {
-
+	/**
+	 * Checks if the disable comments functionality is enabled
+	 *
+	 * @return bool True if enabled, false otherwise
+	 */
 	public static function is_enabled()
 	{
 		// Allow themes or plugins to disable this functionality
 		return apply_filters('built_baseline_disable_comments', true);
 	}
 
+	/**
+	 * Initializes the disable comments functionality
+	 */
 	public function init()
 	{
 		if (!self::is_enabled()) {
 			return;
 		}
+		// Add various action and filter hooks to disable comments
 		add_action('init', array($this, 'disable_comments'));
 		add_action('admin_menu', array($this, 'remove_dashboard_sections'));
 		add_action('wp_before_admin_bar_render', array($this, 'hide_admin_toolbar_link'));
@@ -55,6 +60,9 @@ class DisableComments
 		add_filter('admin_bar_menu', array($this, 'adjust_admin_bar'), 999);
 	}
 
+	/**
+	 * Disables comments and trackbacks for all post types
+	 */
 	public function disable_comments()
 	{
 		// Remove support for comments and trackbacks from all post types
@@ -76,12 +84,18 @@ class DisableComments
 		add_filter('pings_open', '__return_false', 20, 2);
 	}
 
+	/**
+	 * Removes comment-related sections from the dashboard
+	 */
 	public function remove_dashboard_sections()
 	{
 		remove_menu_page('edit-comments.php');
 		remove_submenu_page('options-general.php', 'options-discussion.php');
 	}
 
+	/**
+	 * Hides the comments link from the admin toolbar
+	 */
 	public function hide_admin_toolbar_link()
 	{
 		if (is_admin_bar_showing()) {
@@ -89,32 +103,57 @@ class DisableComments
 		}
 	}
 
+	/**
+	 * Disables comment feeds
+	 */
 	public function disable_comment_feeds()
 	{
 		add_filter('feed_links_show_comments_feed', '__return_false');
 	}
 
+	/**
+	 * Disables comment-related widgets
+	 */
 	public function disable_comment_widgets()
 	{
 		unregister_widget('WP_Widget_Recent_Comments');
 	}
 
+	/**
+	 * Dequeues comment-related assets
+	 */
 	public function disable_comment_assets()
 	{
 		wp_dequeue_script('comment-reply');
 		wp_dequeue_style('wp-admin');
 	}
 
+	/**
+	 * Disables comment notifications
+	 *
+	 * @param array $notify    List of email addresses to notify
+	 * @param int   $comment_id ID of the comment
+	 * @return bool Always returns false to disable notifications
+	 */
 	public function disable_comment_notifications($notify, $comment_id)
 	{
 		return false;
 	}
 
+	/**
+	 * Removes the recent comments widget from the dashboard
+	 */
 	public function remove_dashboard_comments_widget()
 	{
 		remove_meta_box('dashboard_recent_comments', 'dashboard', 'normal');
 	}
 
+	/**
+	 * Disables comment-related REST API endpoints
+	 *
+	 * @param array $endpoints List of REST API endpoints
+	 * @return array Modified list of endpoints
+	 */
 	public function disable_comment_rest_endpoints($endpoints)
 	{
 		if (isset($endpoints['/wp/v2/comments'])) {
@@ -126,12 +165,21 @@ class DisableComments
 		return $endpoints;
 	}
 
+	/**
+	 * Removes the comment form from posts
+	 *
+	 * @param array $defaults Default comment form settings
+	 * @return array Modified comment form settings
+	 */
 	public function remove_comment_form($defaults)
 	{
 		$defaults['comment_form'] = null;
 		return $defaults;
 	}
 
+	/**
+	 * Redirects users away from the comments page in the admin
+	 */
 	public function redirect_comments_page()
 	{
 		global $pagenow;
@@ -143,9 +191,10 @@ class DisableComments
 	}
 
 	/**
-	 * Adjust Admin Bar
+	 * Adjusts the admin bar to remove comments-related items
 	 *
-	 * @return void
+	 * @param WP_Admin_Bar $wp_toolbar The WordPress admin bar object
+	 * @return WP_Admin_Bar Modified admin bar
 	 */
 	public function adjust_admin_bar($wp_toolbar)
 	{
