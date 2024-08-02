@@ -52,7 +52,7 @@ class Cleanup
 	{
 		$my_account = $wp_admin_bar->get_node('my-account');
 		if (isset($my_account->title)) {
-			$newtitle = str_replace('Howdy,', 'Yo!', $my_account->title);
+			$newtitle = str_replace('Howdy,', '', $my_account->title);
 			$wp_admin_bar->add_node(array(
 				'id' => 'my-account',
 				'title' => $newtitle,

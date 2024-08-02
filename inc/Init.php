@@ -41,11 +41,11 @@ class Init
 		$this->comments->init();
 	}
 
-	public static function boot($hook = 'plugins_loaded')
+	public static function boot($hook = 'init')
 	{
 		add_action($hook, function () {
 			$instance = new self();
 			$instance->init();
-		});
+		}, 10);
 	}
 }
