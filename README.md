@@ -15,10 +15,10 @@ This library is meant to be dropped into a theme or plugin via composer.
 2. In your main plugin file or theme's functions.php, add:
 
 ```php
-use BuiltNorth\Baseline\Init;
+use BuiltNorth\Baseline;
 
-if (class_exists('BuiltNorth\Baseline\Init')) {
-    Init::boot();
+if (class_exists('BuiltNorth\Baseline')) {
+    Baseline\Init::instance();
 }
 ```
 
