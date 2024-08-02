@@ -2,10 +2,10 @@
 
 /**
  * ------------------------------------------------------------------
- * Core
+ * Init
  * ------------------------------------------------------------------
  *
- * Core class to initialize all other classes
+ * Init class to initialize all other classes
  *
  * @package Baseline
  * @since Baseline 4.3.1
@@ -21,21 +21,24 @@ if (!defined('WPINC')) {
 	die;
 }
 
-class Core
+class Init
 {
 	private $cleanup;
 	private $security;
+	private $comments;
 
 	public function __construct()
 	{
 		$this->cleanup = new Cleanup();
 		$this->security = new Security();
+		$this->comments = new DisableComments();
 	}
 
 	public function init()
 	{
 		$this->cleanup->init();
 		$this->security->init();
+		$this->comments->init();
 	}
 
 	public static function boot($hook = 'plugins_loaded')

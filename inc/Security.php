@@ -25,7 +25,7 @@ class Security
 	public function init()
 	{
 		add_filter('the_generator', [$this, 'remove_wp_version_head_and_feeds']);
-		add_action('admin_menu', [$this, 'remove_wp_version_footer']);
+		add_action('admin_menu', [$this, 'remove_wp_version_footer'], 9999);
 		add_filter('style_loader_src', [$this, 'remove_wp_version_files'], 9999);
 		add_filter('script_loader_src', [$this, 'remove_wp_version_files'], 9999);
 		add_action('pre_ping', [$this, 'no_self_ping']);
@@ -47,7 +47,8 @@ class Security
 	 */
 	public function remove_wp_version_footer()
 	{
-		remove_filter('update_footer', 'Baseline_update_footer');
+		add_filter('admin_footer_text', '__return_empty_string', 11);
+		add_filter('update_footer', '__return_empty_string', 11);
 	}
 
 	/**
