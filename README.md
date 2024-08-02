@@ -17,7 +17,7 @@ This library is meant to be dropped into a theme or plugin via composer.
 ```php
 use BuiltNorth\Baseline;
 
-if (class_exists('BuiltNorth\Baseline')) {
+if (class_exists('BuiltNorth\Baseline\Init')) {
     Baseline\Init::instance();
 }
 ```
