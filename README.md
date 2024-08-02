@@ -1,6 +1,6 @@
 # WP Baseline
 
-Composer package containing core functionality that is used on BuiltNorth WordPress sites. Adds security and hardening features and cleans up some default functionality.
+Composer package containing core functionality that is used across Built North WordPress sites. This package is meant to dropped in to either a theme or plugin.
 
 ## Requirements
 
@@ -30,7 +30,7 @@ if (class_exists('BuiltNorth\Baseline\Init')) {
 
 ### Disable Comments
 
-This package contains functionality to disable comments. However, it is not turned on by default. To enable this feature, and disable comments, run the following:
+Comments are disabled by default. If your site requires comment functionality simply, set this feature to return false:
 
 ```
 add_filter('built_baseline_disable_comments', '__return_false');
@@ -45,7 +45,3 @@ Use of this library is at your own risk. The authors and contributors of this pr
 While we strive to keep this library up-to-date and secure, we make no guarantees about its performance, reliability, or suitability for any particular purpose. Users are advised to thoroughly test the library in a safe environment before deploying it to a live site.
 
 By using this library, you acknowledge that you have read this disclaimer and agree to its terms.
-
-```
-
-```
