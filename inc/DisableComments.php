@@ -33,7 +33,7 @@ class DisableComments
 	public static function is_not_enabled()
 	{
 		// Allow themes or plugins to disable this functionality
-		return apply_filters('built_baseline_disable_comments', false, 2);
+		return apply_filters('built_baseline_disable_comments', false);
 	}
 
 	/**
