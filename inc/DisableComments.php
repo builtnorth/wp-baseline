@@ -30,10 +30,10 @@ class DisableComments
 	 *
 	 * @return bool True if enabled, false otherwise
 	 */
-	public static function is_enabled()
+	public static function is_not_enabled()
 	{
 		// Allow themes or plugins to disable this functionality
-		return apply_filters('built_baseline_disable_comments', true);
+		return apply_filters('built_baseline_disable_comments', false, 2);
 	}
 
 	/**
@@ -41,7 +41,7 @@ class DisableComments
 	 */
 	public function init()
 	{
-		if (!self::is_enabled()) {
+		if (!self::is_not_enabled()) {
 			return;
 		}
 		// Add various action and filter hooks to disable comments

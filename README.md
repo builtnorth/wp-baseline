@@ -30,10 +30,10 @@ if (class_exists('BuiltNorth\Baseline\Init')) {
 
 ### Disable Comments
 
-Comments are disabled by default. If your site requires comment functionality simply, set this feature to return false:
+Comments remain enabled by default. If you would like to disable them, set this feature to return true:
 
 ```
-add_filter('built_baseline_disable_comments', '__return_false');
+add_filter('built_baseline_disable_comments', '__return_true');
 ```
 
 ## Disclaimer
