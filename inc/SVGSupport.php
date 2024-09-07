@@ -102,7 +102,7 @@ class SVGSupport
 			$clean_svg = $sanitizer->sanitize($dirty_svg);
 
 			if ($clean_svg === false) {
-				$file['error'] = __('SVG file could not be sanitized.', 'wdsbt');
+				$file['error'] = __('SVG file could not be sanitized.', 'built-wp-baseline');
 			} else {
 				file_put_contents($file['tmp_name'], $clean_svg);
 			}
