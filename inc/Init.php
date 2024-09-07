@@ -41,7 +41,8 @@ class Init
 	protected $classes = [
 		'Security',
 		'Cleanup',
-		'DisableComments'
+		'DisableComments',
+		'SVGSupport'
 	];
 
 	/**

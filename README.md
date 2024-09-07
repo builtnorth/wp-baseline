@@ -24,17 +24,22 @@ if (class_exists('BuiltNorth\Baseline\Init')) {
 
 ## Features
 
--   Cleanup of unnessary WordPress functionality.
+-   Cleanup of unnecessary WordPress functionality.
 -   Enhanced security measures.
 -   Option to disable comments (see below).
+-   SVG upload support with sanitization.
 
 ### Disable Comments
 
 Comments remain enabled by default. If you would like to disable them, set this feature to return true:
 
-```
+```php
 add_filter('built_baseline_disable_comments', '__return_true');
 ```
+
+### SVG Support
+
+Adds support for SVG uploads. SVGs are automatically sanitized upon upload using the [enshrined/svg-sanitize](https://github.com/darylldoyle/svg-sanitizer) library for security to remove potentially malicious content.
 
 ## Disclaimer
 
