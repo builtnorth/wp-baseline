@@ -26,8 +26,8 @@ class Security
 	{
 		add_filter('the_generator', [$this, 'remove_wp_version_head_and_feeds']);
 		add_action('admin_menu', [$this, 'remove_wp_version_footer'], 9999);
-		add_filter('style_loader_src', [$this, 'remove_wp_version_files'], 9999);
-		add_filter('script_loader_src', [$this, 'remove_wp_version_files'], 9999);
+		add_filter('style_loader_src', [$this, 'replace_wp_version_in_files'], 9999);
+		add_filter('script_loader_src', [$this, 'replace_wp_version_in_files'], 9999);
 		add_action('pre_ping', [$this, 'no_self_ping']);
 		add_action('init', [$this, 'disable_xmlrpc']);
 		add_filter('wp_headers', [$this, 'remove_x_pingback']);
@@ -52,14 +52,58 @@ class Security
 	}
 
 	/**
-	 * Remove WP version param from any enqueued scripts
+	 * Replace WP version param with custom version for any enqueued scripts and styles
+	 * only if a custom version is not already set
 	 */
-	public function remove_wp_version_files($src)
+	public function replace_wp_version_in_files($src)
 	{
 		if (strpos($src, 'ver=')) {
-			$src = remove_query_arg('ver', $src);
+			$version = $this->get_query_arg_value('ver', $src);
+			if ($version === get_bloginfo('version')) {
+				$src = remove_query_arg('ver', $src);
+				$src = add_query_arg('ver', $this->get_asset_version(), $src);
+			}
 		}
 		return $src;
+	}
+
+	/**
+	 * Get the value of a query argument from a URL
+	 * 
+	 * @param string $arg The query argument to get
+	 * @param string $url The URL to parse
+	 * @return string|null The value of the query argument, or null if not found
+	 */
+	private function get_query_arg_value($arg, $url)
+	{
+		$parts = parse_url($url);
+		if (!isset($parts['query'])) {
+			return null;
+		}
+		parse_str($parts['query'], $query);
+		return isset($query[$arg]) ? $query[$arg] : null;
+	}
+
+	/**
+	 * Get asset version
+	 * 
+	 * @return string
+	 */
+	private function get_asset_version()
+	{
+		// Option 1: Use a constant defined in your theme or plugin
+		if (defined('YOUR_THEME_VERSION')) {
+			return YOUR_THEME_VERSION;
+		}
+
+		// Option 2: Use the last modified time of your main CSS or JS file
+		$theme_file = get_template_directory() . '/style.css';
+		if (file_exists($theme_file)) {
+			return filemtime($theme_file);
+		}
+
+		// Option 3: Use a timestamp that updates daily
+		return date('Ymd');
 	}
 
 	/**
