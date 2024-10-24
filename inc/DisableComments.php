@@ -58,6 +58,14 @@ class DisableComments
 		add_filter('comment_form_defaults', array($this, 'remove_comment_form'));
 		add_action('admin_init', array($this, 'redirect_comments_page'));
 		add_filter('admin_bar_menu', array($this, 'adjust_admin_bar'), 999);
+		add_filter('manage_pages_columns', array($this, 'remove_pages_count_columns'));
+		add_filter('manage_posts_columns', array($this, 'remove_pages_count_columns'));
+	}
+
+	public function remove_pages_count_columns($defaults)
+	{
+		unset($defaults['comments']);
+		return $defaults;
 	}
 
 	/**
