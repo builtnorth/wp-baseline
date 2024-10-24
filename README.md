@@ -1,13 +1,18 @@
 # WP Baseline
 
-Composer package containing core functionality that is used across Built North WordPress sites. This package is meant to dropped in to either a theme or plugin.
+WP Baseline is a Composer package that provides baseline functionality for WordPress. Some of the functionality includes:
+
+-   Cleanup of unnecessary WordPress features
+-   Enhanced security measures
+-   SVG upload support with sanitization
+-   Cleanup of the admin dashboard
 
 ## Requirements
 
--   PHP >= 8.1
--   WordPress >= 6.4
+-   PHP >= 8
+-   WordPress >= 6
 
-## Installation
+## Installation & Usage
 
 This library is meant to be dropped into a theme or plugin via composer.
 
@@ -15,31 +20,75 @@ This library is meant to be dropped into a theme or plugin via composer.
 2. In your main plugin file or theme's functions.php, add:
 
 ```php
-use BuiltNorth\Baseline;
+use WPBaseline;
 
-if (class_exists('BuiltNorth\Baseline\Init')) {
-    Baseline\Init::instance();
+if (class_exists('WPBaseline\App')) {
+    $baseline = new WPBaseline\App;
+    $baseline->boot();
 }
 ```
 
 ## Features
 
--   Cleanup of unnecessary WordPress functionality.
--   Enhanced security measures.
--   Option to disable comments (see below).
--   SVG upload support with sanitization.
-
 ### Disable Comments
 
-Comments remain enabled by default. If you would like to disable them, set this feature to return true:
+Comments remain enabled by default. To disable them, set this filter to return true:
 
 ```php
-add_filter('built_baseline_disable_comments', '__return_true');
+add_filter('wpbaseline_disable_comments', '__return_true');
+```
+
+### Howdy Text
+
+By default the "Howdy" text is removed from the admin bar. You can customize this and add your own text using the following filter:
+
+```php
+add_filter('wpbaseline_howdy_text', function ($text) {
+    return 'Hey,';
+});
+```
+
+### Admin Bar
+
+By default the WP logo, search, and updates nodes are removed from the admin bar. They can be re-enabled using the following filter:
+
+```php
+add_filter('wpbaseline_clean_admin_bar', '__return_false');
+```
+
+### Dashboard Widgets
+
+Most core dashboard widgets are removed. They can be re-enabled using the following filter:
+
+```php
+add_filter('wpbaseline_remove_dashboard_widgets', '__return_false');
+```
+
+### Emojis
+
+Emojis are disabled. They can be re-enabled using the following filter:
+
+```php
+add_filter('wpbaseline_disable_emojis', '__return_false');
+```
+
+### Auto Update Emails
+
+Auto update emails are disabled. Additionally, the from name in the email is customized based on the site name. This functionality can be reverted back to the default by using the filter:
+
+```php
+add_filter('wpbaseline_disable_update_emails', '__return_false');
 ```
 
 ### SVG Support
 
 Adds support for SVG uploads. SVGs are automatically sanitized upon upload using the [enshrined/svg-sanitize](https://github.com/darylldoyle/svg-sanitizer) library for security to remove potentially malicious content.
+
+To disable SVG support, use the following filter:
+
+```php
+add_filter('wpbaseline_enable_svg_support', '__return_false');
+```
 
 ## Disclaimer
 
