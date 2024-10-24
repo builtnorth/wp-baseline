@@ -60,6 +60,7 @@ class DisableComments
 		add_filter('admin_bar_menu', array($this, 'adjust_admin_bar'), 999);
 		add_filter('manage_pages_columns', array($this, 'remove_pages_count_columns'));
 		add_filter('manage_posts_columns', array($this, 'remove_pages_count_columns'));
+		add_action('enqueue_block_editor_assets', array($this, 'remove_discussion_panel'));
 	}
 
 	public function remove_pages_count_columns($defaults)
@@ -208,5 +209,18 @@ class DisableComments
 	{
 		$wp_toolbar->remove_node('comments');  // disable comments
 		return $wp_toolbar;
+	}
+
+	/**
+	 * Removes the Discussion panel from the Gutenberg editor
+	 */
+	public function remove_discussion_panel()
+	{
+		wp_add_inline_script(
+			'wp-edit-post',
+			'wp.domReady(function () {
+				wp.data.dispatch("core/edit-post").removeEditorPanel("discussion-panel");
+			});'
+		);
 	}
 }
