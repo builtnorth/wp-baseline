@@ -27,7 +27,8 @@ class Init
 			'Constants',
 			'Pingbacks',
 			'Version',
-			'XMLRPC'
+			'XMLRPC',
+			'Headers',
 		];
 
 		// Loop through each class and initialize it

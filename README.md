@@ -91,6 +91,39 @@ add_filter('wpbaseline_asset_version_constant', function () {
 });
 ```
 
+### Security Headers
+
+WP Baseline implements security headers by default for enhanced security. These include:
+
+-   Content Security Policy (CSP)
+-   X-Content-Type-Options
+-   X-Frame-Options
+-   And more...
+
+To disable all security headers:
+
+```php
+add_filter('wpbaseline_enable_security_headers', 'return_false');
+```
+
+To modify specific headers or CSP rules, use these filters:
+
+```php
+// Modify security headers
+add_filter('wpbaseline_security_headers', function($headers) {
+    // Customize headers
+    $headers['X-Frame-Options'] = 'DENY';
+    return $headers;
+});
+
+// Modify CSP rules
+add_filter('wpbaseline_security_headers_csp', function($csp) {
+    // Customize CSP
+    $csp['img-src'] = "'self' data: https: *";
+    return $csp;
+});
+```
+
 ### SVG Support
 
 Adds support for SVG uploads. SVGs are automatically sanitized upon upload using the [enshrined/svg-sanitize](https://github.com/darylldoyle/svg-sanitizer) library for security to remove potentially malicious content.
