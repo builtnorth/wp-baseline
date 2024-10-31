@@ -80,6 +80,17 @@ Auto update emails are disabled. Additionally, the from name in the email is cus
 add_filter('wpbaseline_disable_update_emails', '__return_false');
 ```
 
+### Asset Version Numbering
+
+Wordpress adds a version query argument to all enqueued assets by default. This exposes the version number, which can be a security risk. WP Baseline replaces the version number with `filemtime` of the theme's style.css file by default with a fallback to `date('Ymd')`. However, you can set a custom version by defining a constant in your theme or plugin:
+
+```php
+define('YOUR_THEME_VERSION', '1.2.9');
+add_filter('wpbaseline_asset_version_constant', function () {
+    return 'YOUR_THEME_VERSION';
+});
+```
+
 ### SVG Support
 
 Adds support for SVG uploads. SVGs are automatically sanitized upon upload using the [enshrined/svg-sanitize](https://github.com/darylldoyle/svg-sanitizer) library for security to remove potentially malicious content.
