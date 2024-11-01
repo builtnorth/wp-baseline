@@ -109,7 +109,9 @@ class Headers
 
 		// Set CSP header if value is not empty
 		if (!empty($header_value)) {
-			header("Content-Security-Policy: $header_value");
+			if (!headers_sent()) {
+				header("Content-Security-Policy: $header_value");
+			}
 		}
 	}
 
