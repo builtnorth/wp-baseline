@@ -13,17 +13,27 @@
 
 namespace WPBaseline\Cleanup;
 
+use WPBaseline\Abstracts\AbstractInit;
+
 // Don't load directly.
 defined('ABSPATH') || exit;
 
-class Init
+class Init extends AbstractInit
 {
 	/**
-	 * Initialize all cleanup classes.
+	 * Get the namespace for the init class
 	 */
-	public function init()
+	protected function getNamespace(): string
 	{
-		$classes = [
+		return __NAMESPACE__;
+	}
+
+	/**
+	 * Get the classes to initialize
+	 */
+	protected function getClasses(): array
+	{
+		return [
 			'AdminBar',
 			'Dashboard',
 			'Emoji',
@@ -32,16 +42,5 @@ class Init
 			'Mail',
 			'Widgets',
 		];
-
-		// Loop through each class and initialize it
-		foreach ($classes as $class) {
-			$class_name = __NAMESPACE__ . '\\' . $class;
-			if (class_exists($class_name)) {
-				$instance = new $class_name();
-				if (method_exists($instance, 'init')) {
-					$instance->init();
-				}
-			}
-		}
 	}
 }

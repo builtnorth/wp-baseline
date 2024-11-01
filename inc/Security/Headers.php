@@ -8,7 +8,7 @@
  * Implements security headers for WordPress.
  *
  * @package WPBaseline
- * @since 2.0.0
+ * @since 2.1.0
  */
 
 namespace WPBaseline\Security;

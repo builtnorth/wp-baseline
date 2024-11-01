@@ -115,13 +115,28 @@ add_filter('wpbaseline_security_headers', function($headers) {
     $headers['X-Frame-Options'] = 'DENY';
     return $headers;
 });
+```
 
-// Modify CSP rules
-add_filter('wpbaseline_security_headers_csp', function($csp) {
-    // Customize CSP
-    $csp['img-src'] = "'self' data: https: *";
-    return $csp;
-});
+### Login Security
+
+The following items have been added to enhance login security:
+
+-   Prevent username login
+-   Returnsa generic login error message
+-   Disable autocomplete for login fields
+
+To disable login security enhancements, use the following filter:
+
+```php
+add_filter('wpbaseline_login_security', '__return_false');
+```
+
+### XMLRPC
+
+XMLRPC is disabled by default. To re-enable it, use the following filter:
+
+```php
+add_filter('wpbaseline_disable_xmlrpc', '__return_false');
 ```
 
 ### SVG Support

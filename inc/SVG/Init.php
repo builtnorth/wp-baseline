@@ -13,35 +13,29 @@
 
 namespace WPBaseline\SVG;
 
+use WPBaseline\Abstracts\AbstractInit;
+
 // Don't load directly.
 defined('ABSPATH') || exit;
 
-class Init
+class Init extends AbstractInit
 {
 	/**
-	 * Initialize all SVG classes.
+	 * Get the namespace for the init class
 	 */
-	public function init()
+	protected function getNamespace(): string
 	{
-		// Check if the SVG support should be enabled
-		$enable_svg_support = apply_filters('wpbaseline_enable_svg_support', true);
+		return __NAMESPACE__;
+	}
 
-		if ($enable_svg_support) {
-			$classes = [
-				'Upload',
-				'Sanitize'
-			];
-
-			// Loop through each class and initialize it
-			foreach ($classes as $class) {
-				$class_name = __NAMESPACE__ . '\\' . $class;
-				if (class_exists($class_name)) {
-					$instance = new $class_name();
-					if (method_exists($instance, 'init')) {
-						$instance->init();
-					}
-				}
-			}
-		}
+	/**
+	 * Get the classes to initialize
+	 */
+	protected function getClasses(): array
+	{
+		return [
+			'Upload',
+			'Sanitize',
+		];
 	}
 }
