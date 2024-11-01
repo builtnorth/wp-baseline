@@ -19,89 +19,117 @@ defined('ABSPATH') || exit;
 class Headers
 {
 	/**
-	 * Initialize the class.
+	 * Default security headers
+	 *
+	 * @var array
+	 */
+	private const SECURITY_HEADERS = [
+		'X-Content-Type-Options' => 'nosniff',
+		'X-Frame-Options' => 'SAMEORIGIN',
+		'X-XSS-Protection' => '1; mode=block',
+		'Referrer-Policy' => 'strict-origin-when-cross-origin',
+		'Permissions-Policy' => 'geolocation=(), microphone=()',
+		'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains',
+	];
+
+	/**
+	 * Default Content Security Policy directives
+	 *
+	 * @var array
+	 */
+	private const CSP_DIRECTIVES = [
+		'default-src'  => "'self'",
+		'script-src'   => "'self' 'unsafe-inline' 'unsafe-eval' https: *.googleapis.com *.gstatic.com *.google.com *.google-analytics.com *.doubleclick.net *.wordpress.org *.wp.com",
+		'style-src'    => "'self' 'unsafe-inline' https:",
+		'img-src'      => "'self' data: https: *",
+		'font-src'     => "'self' data: https:",
+		'connect-src'  => "'self' https:",
+		'media-src'    => "'self' https:",
+		'object-src'   => "'none'",
+		'frame-src'    => "'self' https:",
+		'base-uri'     => "'self'",
+		'form-action'  => "'self'",
+	];
+
+	/**
+	 * Initialize security headers
 	 */
 	public function init(): void
 	{
-		// Check if security headers should be applied
-		if (apply_filters('wpbaseline_enable_security_headers', true)) {
-			add_action('send_headers', [$this, 'apply_headers']);
+		// Check if security headers are enabled
+		if (!(bool) apply_filters('wpbaseline_enable_security_headers', true)) {
+			return;
 		}
+
+		// Apply security headers
+		add_action('send_headers', [$this, 'apply_headers']);
 	}
 
 	/**
-	 * Apply security headers.
+	 * Apply all security headers
 	 */
 	public function apply_headers(): void
 	{
-		$headers = $this->get_headers();
+		// Set security headers	
+		$this->set_security_headers();
 
-		foreach ($headers as $header => $value) {
-			header("$header: $value");
-		}
+		// Set CSP header
+		$this->set_csp_header();
+	}
 
-		if (!headers_sent()) {
-			$this->apply_csp();
+	/**
+	 * Set basic security headers
+	 */
+	private function set_security_headers(): void
+	{
+		// Apply security headers
+		$headers = apply_filters('wpbaseline_security_headers', self::SECURITY_HEADERS);
+
+		// Loop through headers and set them
+		foreach ($headers as $name => $value) {
+			header("$name: $value");
 		}
 	}
 
 	/**
-	 * Get all security headers.
+	 * Set Content Security Policy header
+	 */
+	private function set_csp_header(): void
+	{
+		// Check if headers have already been sent
+		if (headers_sent()) {
+			return;
+		}
+
+		// Get CSP directives
+		$directives = apply_filters('wpbaseline_security_headers_csp', self::CSP_DIRECTIVES);
+
+		// Build CSP header value
+		$header_value = $this->build_csp_value($directives);
+
+		// Set CSP header if value is not empty
+		if (!empty($header_value)) {
+			header("Content-Security-Policy: $header_value");
+		}
+	}
+
+	/**
+	 * Build CSP header value from directives
 	 *
-	 * @return array Array of security headers
+	 * @param array $directives CSP directives
+	 * @return string Formatted CSP header value
 	 */
-	private function get_headers(): array
+	private function build_csp_value(array $directives): string
 	{
-		$defaults = [
-			'X-Content-Type-Options' => 'nosniff',
-			'X-Frame-Options' => 'SAMEORIGIN',
-			'X-XSS-Protection' => '1; mode=block',
-			'Referrer-Policy' => 'strict-origin-when-cross-origin',
-			'Permissions-Policy' => 'geolocation=(), microphone=()',
-			'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains',
-		];
+		// Initialize parts array
+		$parts = [];
 
-		/**
-		 * Filter the security headers.
-		 *
-		 * @param array $headers Array of security headers
-		 */
-		return apply_filters('wpbaseline_security_headers', $defaults);
-	}
-
-	/**
-	 * Apply Content Security Policy.
-	 */
-	private function apply_csp(): void
-	{
-		$defaults = [
-			'default-src'  => "'self'",
-			'script-src'   => "'self' 'unsafe-inline' 'unsafe-eval' https: *.googleapis.com *.gstatic.com *.google.com *.google-analytics.com *.doubleclick.net *.wordpress.org *.wp.com",
-			'style-src'    => "'self' 'unsafe-inline' https:",
-			'img-src'      => "'self' data: https: *",
-			'font-src'     => "'self' data: https:",
-			'connect-src'  => "'self' https:",
-			'media-src'    => "'self' https:",
-			'object-src'   => "'none'",
-			'frame-src'    => "'self' https:",
-			'base-uri'     => "'self'",
-			'form-action'  => "'self'",
-		];
-
-		/**
-		 * Filter the Content Security Policy.
-		 *
-		 * @param array $csp Array of CSP directives
-		 */
-		$csp = apply_filters('wpbaseline_security_headers_csp', $defaults);
-
-		$header = '';
-		foreach ($csp as $directive => $value) {
-			$header .= "$directive $value; ";
+		// Loop through directives and build parts
+		foreach ($directives as $directive => $value) {
+			$parts[] = "$directive $value";
 		}
 
-		if (!empty($header)) {
-			header('Content-Security-Policy: ' . trim($header));
-		}
+		// Return parts as a string separated by semicolons
+		return implode('; ', $parts);
 	}
 }

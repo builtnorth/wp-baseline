@@ -103,7 +103,7 @@ WP Baseline implements security headers by default for enhanced security. These 
 To disable all security headers:
 
 ```php
-add_filter('wpbaseline_enable_security_headers', 'return_false');
+add_filter('wpbaseline_enable_security_headers', '__return_false');
 ```
 
 To modify specific headers or CSP rules, use these filters:
