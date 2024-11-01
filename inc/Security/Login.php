@@ -23,7 +23,7 @@ class Login
 	 */
 	public function init()
 	{
-		if ((bool) apply_filters('wpbaseline_enhance_login_security', true)) {
+		if ((bool) apply_filters('wpbaseline_login_security', true)) {
 			add_filter('authenticate', [$this, 'prevent_username_login'], 30, 3);
 			add_filter('login_errors', [$this, 'generic_login_error']);
 			add_action('login_enqueue_scripts', [$this, 'disable_autocomplete']);
@@ -54,7 +54,8 @@ class Login
 	 */
 	public function disable_autocomplete()
 	{
-		echo '<script>
+		echo
+		'<script>
             document.getElementById("user_login").autocomplete = "off";
             document.getElementById("user_pass").autocomplete = "off";
         </script>';
