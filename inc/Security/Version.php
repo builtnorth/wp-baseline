@@ -79,15 +79,17 @@ class Version
 	 */
 	private function get_asset_version()
 	{
-		if (defined('YOUR_THEME_VERSION')) {
-			return YOUR_THEME_VERSION;
+		// Constant defined by the theme or plugin
+		$asset_version_constant = apply_filters('wpbaseline_asset_version_constant', '');
+		if (defined($asset_version_constant)) {
+			return constant($asset_version_constant);
 		}
-
+		// File modified time from theme
 		$theme_file = get_template_directory() . '/style.css';
 		if (file_exists($theme_file)) {
 			return filemtime($theme_file);
 		}
-
+		// Default to today's date
 		return date('Ymd');
 	}
 }

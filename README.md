@@ -80,6 +80,73 @@ Auto update emails are disabled. Additionally, the from name in the email is cus
 add_filter('wpbaseline_disable_update_emails', '__return_false');
 ```
 
+### Asset Version Numbering
+
+Wordpress adds a version query argument to all enqueued assets by default. This exposes the version number, which can be a security risk. WP Baseline replaces the version number with `filemtime` of the theme's style.css file by default with a fallback to `date('Ymd')`. However, you can set a custom version by defining a constant in your theme or plugin:
+
+```php
+define('YOUR_THEME_VERSION', '1.2.9');
+add_filter('wpbaseline_asset_version_constant', function () {
+    return 'YOUR_THEME_VERSION';
+});
+```
+
+### Security Headers
+
+WP Baseline implements security headers by default for enhanced security. These include:
+
+-   Content Security Policy (CSP)
+-   X-Content-Type-Options
+-   X-Frame-Options
+-   And more...
+
+To disable all security headers:
+
+```php
+add_filter('wpbaseline_enable_security_headers', '__return_false');
+```
+
+To modify specific headers or CSP rules, use these filters:
+
+```php
+// Modify security headers
+add_filter('wpbaseline_security_headers', function($headers) {
+    // Customize headers
+    $headers['X-Frame-Options'] = 'DENY';
+    return $headers;
+});
+```
+
+### Login Security
+
+The following items have been added to enhance login security:
+
+-   Prevent username login
+-   Returnsa generic login error message
+-   Disable autocomplete for login fields
+
+To disable login security enhancements, use the following filter:
+
+```php
+add_filter('wpbaseline_login_security', '__return_false');
+```
+
+### REST API User Endpoints
+
+REST API user endpoints are restricted to users with the `list_users` capability by default. To disable this restriction and make the user endpoint publicly accessible again use this filter:
+
+```php
+add_filter('wpbaseline_disable_user_rest_endpoints', '__return_false');
+```
+
+### XMLRPC
+
+XMLRPC is disabled by default. To re-enable it, use the following filter:
+
+```php
+add_filter('wpbaseline_disable_xmlrpc', '__return_false');
+```
+
 ### SVG Support
 
 Adds support for SVG uploads. SVGs are automatically sanitized upon upload using the [enshrined/svg-sanitize](https://github.com/darylldoyle/svg-sanitizer) library for security to remove potentially malicious content.
