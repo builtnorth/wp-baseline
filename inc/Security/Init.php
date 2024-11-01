@@ -40,6 +40,7 @@ class Init extends AbstractInit
 			'XMLRPC',
 			'Headers',
 			'Login',
+			'RestAPI',
 		];
 	}
 }
