@@ -131,6 +131,14 @@ To disable login security enhancements, use the following filter:
 add_filter('wpbaseline_login_security', '__return_false');
 ```
 
+### REST API User Endpoints
+
+REST API user endpoints are restricted to users with the `list_users` capability by default. To disable this restriction and make the user endpoint publicly accessible again use this filter:
+
+```php
+add_filter('wpbaseline_disable_user_rest_endpoints', '__return_false');
+```
+
 ### XMLRPC
 
 XMLRPC is disabled by default. To re-enable it, use the following filter:
