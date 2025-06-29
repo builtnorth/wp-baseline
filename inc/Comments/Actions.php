@@ -126,7 +126,7 @@ class Actions
 		wp_add_inline_script(
 			'wp-edit-post',
 			'wp.domReady(function () {
-                wp.data.dispatch("core/edit-post").removeEditorPanel("discussion-panel");
+                wp.data.dispatch("core/editor").removeEditorPanel("discussion-panel");
             });'
 		);
 	}
