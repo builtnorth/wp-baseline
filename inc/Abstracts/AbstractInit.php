@@ -14,7 +14,7 @@
 namespace WPBaseline\Abstracts;
 
 // Don't load directly.
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 abstract class AbstractInit
 {

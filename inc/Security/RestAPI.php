@@ -13,7 +13,7 @@
 
 namespace WPBaseline\Security;
 
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 class RestAPI
 {

@@ -19,7 +19,7 @@ use WPBaseline\Security\Init as SecurityInit;
 use WPBaseline\SVG\Init as SVGInit;
 
 // Don't load directly.
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 class App
 {

@@ -16,7 +16,7 @@ namespace WPBaseline\SVG;
 use WPBaseline\Abstracts\AbstractInit;
 
 // Don't load directly.
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 class Init extends AbstractInit
 {
