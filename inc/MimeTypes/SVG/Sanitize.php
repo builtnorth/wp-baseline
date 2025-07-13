@@ -11,7 +11,7 @@
  * @since 2.0.0
  */
 
-namespace WPBaseline\SVG;
+namespace WPBaseline\MimeTypes\SVG;
 
 use enshrined\svgSanitize\Sanitizer;
 
