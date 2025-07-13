@@ -11,7 +11,7 @@
  * @since 2.0.0
  */
 
-namespace WPBaseline\Comments;
+namespace BuiltNorth\WPBaseline\Comments;
 
 class Actions
 {

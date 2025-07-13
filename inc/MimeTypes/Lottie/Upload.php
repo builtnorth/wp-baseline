@@ -11,7 +11,7 @@
  * @since 2.3.0
  */
 
-namespace WPBaseline\MimeTypes\Lottie;
+namespace BuiltNorth\WPBaseline\MimeTypes\Lottie;
 
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;

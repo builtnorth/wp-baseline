@@ -20,10 +20,10 @@ This library is meant to be dropped into a theme or plugin via composer.
 2. In your main plugin file or theme's functions.php, add:
 
 ```php
-use WPBaseline;
+use BuiltNorth\WPBaseline;
 
-if (class_exists('WPBaseline\App')) {
-    $baseline = new WPBaseline\App;
+if (class_exists('BuiltNorth\WPBaseline\App')) {
+    $baseline = BuiltNorth\WPBaseline\App::instance();
     $baseline->boot();
 }
 ```

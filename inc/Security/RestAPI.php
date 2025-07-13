@@ -11,7 +11,7 @@
  * @since 1.0.0
  */
 
-namespace WPBaseline\Security;
+namespace BuiltNorth\WPBaseline\Security;
 
 defined('ABSPATH') || defined('WP_CLI') || exit;
 

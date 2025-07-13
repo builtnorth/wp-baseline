@@ -11,9 +11,9 @@
  * @since 1.0.0
  */
 
-namespace WPBaseline\Security;
+namespace BuiltNorth\WPBaseline\Security;
 
-use WPBaseline\Abstracts\AbstractInit;
+use BuiltNorth\WPBaseline\Abstracts\AbstractInit;
 
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;

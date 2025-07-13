@@ -11,7 +11,7 @@
  * @since 2.0.0
  */
 
-namespace WPBaseline\MimeTypes;
+namespace BuiltNorth\WPBaseline\MimeTypes;
 
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;

@@ -11,7 +11,7 @@
  * @since 2.0.0
  */
 
-namespace WPBaseline\MimeTypes\SVG;
+namespace BuiltNorth\WPBaseline\MimeTypes\SVG;
 
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;

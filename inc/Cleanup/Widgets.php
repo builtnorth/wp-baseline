@@ -8,7 +8,7 @@
  * Remove default widgets
  */
 
-namespace WPBaseline\Cleanup;
+namespace BuiltNorth\WPBaseline\Cleanup;
 
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;
