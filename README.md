@@ -2,15 +2,15 @@
 
 WP Baseline is a Composer package that provides baseline functionality for WordPress. Some of the functionality includes:
 
--   Cleanup of unnecessary WordPress features
--   Enhanced security measures
--   SVG upload support with sanitization
--   Cleanup of the admin dashboard
+- Cleanup of unnecessary WordPress features
+- Enhanced security measures
+- SVG upload support with sanitization
+- Cleanup of the admin dashboard
 
 ## Requirements
 
--   PHP >= 8
--   WordPress >= 6
+- PHP >= 8
+- WordPress >= 6
 
 ## Installation & Usage
 
@@ -20,10 +20,10 @@ This library is meant to be dropped into a theme or plugin via composer.
 2. In your main plugin file or theme's functions.php, add:
 
 ```php
-use WPBaseline;
+use BuiltNorth\WPBaseline;
 
-if (class_exists('WPBaseline\App')) {
-    $baseline = new WPBaseline\App;
+if (class_exists('BuiltNorth\WPBaseline\App')) {
+    $baseline = BuiltNorth\WPBaseline\App::instance();
     $baseline->boot();
 }
 ```
@@ -95,10 +95,10 @@ add_filter('wpbaseline_asset_version_constant', function () {
 
 WP Baseline implements security headers by default for enhanced security. These include:
 
--   Content Security Policy (CSP)
--   X-Content-Type-Options
--   X-Frame-Options
--   And more...
+- Content Security Policy (CSP)
+- X-Content-Type-Options
+- X-Frame-Options
+- And more...
 
 To disable all security headers:
 
@@ -121,9 +121,9 @@ add_filter('wpbaseline_security_headers', function($headers) {
 
 The following items have been added to enhance login security:
 
--   Prevent username login
--   Returnsa generic login error message
--   Disable autocomplete for login fields
+- Prevent username login
+- Returnsa generic login error message
+- Disable autocomplete for login fields
 
 To disable login security enhancements, use the following filter:
 
@@ -154,7 +154,43 @@ Adds support for SVG uploads. SVGs are automatically sanitized upon upload using
 To disable SVG support, use the following filter:
 
 ```php
-add_filter('wpbaseline_enable_svg_support', '__return_false');
+add_filter('wpbaseline_enable_svg_uploads', '__return_false');
+```
+
+### Additional MIME Types
+
+Support for JSON and Lottie file uploads is available but disabled by default for security.
+
+To enable JSON uploads:
+
+```php
+add_filter('wpbaseline_enable_json_uploads', '__return_true');
+```
+
+To enable JSON sanitization (optional, off by default):
+
+```php
+add_filter('wpbaseline_sanitize_json_uploads', '__return_true');
+```
+
+To enable Lottie uploads:
+
+```php
+add_filter('wpbaseline_enable_lottie_uploads', '__return_true');
+```
+
+To disable Lottie validation:
+
+```php
+add_filter('wpbaseline_validate_lottie_uploads', '__return_false');
+```
+
+To customize Lottie file size limit (default: 10MB):
+
+```php
+add_filter('wpbaseline_lottie_max_file_size', function() {
+    return 5 * 1024 * 1024; // 5MB
+});
 ```
 
 ## Disclaimer

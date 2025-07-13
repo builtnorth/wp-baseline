@@ -11,18 +11,46 @@
  * @since 2.0.0
  */
 
-namespace WPBaseline;
+namespace BuiltNorth\WPBaseline;
 
-use WPBaseline\Cleanup\Init as CleanupInit;
-use WPBaseline\Comments\Init as CommentsInit;
-use WPBaseline\Security\Init as SecurityInit;
-use WPBaseline\SVG\Init as SVGInit;
+use BuiltNorth\WPBaseline\Cleanup\Init as CleanupInit;
+use BuiltNorth\WPBaseline\Comments\Init as CommentsInit;
+use BuiltNorth\WPBaseline\Security\Init as SecurityInit;
+use BuiltNorth\WPBaseline\MimeTypes\Init as MimeTypesInit;
 
 // Don't load directly.
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 class App
 {
+	/**
+	 * Holds the single instance of this class.
+	 *
+	 * @var App|null
+	 */
+	protected static $instance = null;
+
+	/**
+	 * Get the single instance of this class.
+	 *
+	 * @return App
+	 */
+	public static function instance()
+	{
+		if (is_null(self::$instance)) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Constructor - make it public temporarily for testing
+	 */
+	public function __construct()
+	{
+		// Constructor does nothing - initialization happens in boot()
+	}
+
 	/**
 	 * Bootstrap all classes.
 	 */
@@ -40,8 +68,8 @@ class App
 		$security = new SecurityInit();
 		$security->init();
 
-		// Initialize SVG classes
-		$svg = new SVGInit();
-		$svg->init();
+		// Initialize mime types classes
+		$mime_types = new MimeTypesInit();
+		$mime_types->init();
 	}
 }

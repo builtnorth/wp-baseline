@@ -11,12 +11,12 @@
  * @since 1.0.0
  */
 
-namespace WPBaseline\Cleanup;
+namespace BuiltNorth\WPBaseline\Cleanup;
 
-use WPBaseline\Abstracts\AbstractInit;
+use BuiltNorth\WPBaseline\Abstracts\AbstractInit;
 
 // Don't load directly.
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 class Init extends AbstractInit
 {

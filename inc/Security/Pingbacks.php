@@ -11,10 +11,10 @@
  * @since 2.0.0
  */
 
-namespace WPBaseline\Security;
+namespace BuiltNorth\WPBaseline\Security;
 
 // Don't load directly.
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 class Pingbacks
 {

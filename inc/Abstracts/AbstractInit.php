@@ -11,10 +11,10 @@
  * @since 2.1.0
  */
 
-namespace WPBaseline\Abstracts;
+namespace BuiltNorth\WPBaseline\Abstracts;
 
 // Don't load directly.
-defined('ABSPATH') || exit;
+defined('ABSPATH') || defined('WP_CLI') || exit;
 
 abstract class AbstractInit
 {
