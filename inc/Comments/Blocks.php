@@ -20,6 +20,11 @@ class Blocks
 	 */
 	public function init()
 	{
+		// Check if comments should be disabled
+		if (!apply_filters('wpbaseline_disable_comments', false)) {
+			return;
+		}
+
 		add_filter('allowed_block_types_all', [$this, 'disable_comment_blocks'], 10, 2);
 	}
 
