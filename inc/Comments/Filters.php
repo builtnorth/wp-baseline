@@ -20,6 +20,11 @@ class Filters
 	 */
 	public function init()
 	{
+		// Check if comments should be disabled
+		if (!apply_filters('wpbaseline_disable_comments', false)) {
+			return;
+		}
+
 		add_filter('comment_notification_recipients', [$this, 'disable_comment_notifications'], 10, 2);
 		add_filter('rest_endpoints', [$this, 'disable_comment_rest_endpoints']);
 		add_filter('comment_form_defaults', [$this, 'remove_comment_form']);

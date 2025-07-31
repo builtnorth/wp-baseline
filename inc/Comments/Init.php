@@ -36,6 +36,7 @@ class Init extends AbstractInit
 		return [
 			'Actions',
 			'Filters',
+			'Blocks',
 		];
 	}
 }

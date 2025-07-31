@@ -64,7 +64,6 @@ class AdminBar
 			'wp-logo',
 			'search',
 			'updates',
-			'comments',
 		];
 
 		// Remove the default nodes

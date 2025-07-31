@@ -20,10 +20,22 @@ class Actions
 	 */
 	public function init()
 	{
-		add_action('init', [$this, 'disable_comments']);
+		// Check if comments should be disabled
+		if (!apply_filters('wpbaseline_disable_comments', false)) {
+			return;
+		}
+
+		// If init has already fired, run immediately
+		if (did_action('init')) {
+			$this->disable_comments();
+			$this->disable_comment_feeds();
+		} else {
+			add_action('init', [$this, 'disable_comments']);
+			add_action('init', [$this, 'disable_comment_feeds']);
+		}
+		
 		add_action('admin_menu', [$this, 'remove_dashboard_sections']);
 		add_action('wp_before_admin_bar_render', [$this, 'hide_admin_toolbar_link']);
-		add_action('init', [$this, 'disable_comment_feeds']);
 		add_action('widgets_init', [$this, 'disable_comment_widgets']);
 		add_action('wp_enqueue_scripts', [$this, 'disable_comment_assets'], 100);
 		add_action('admin_enqueue_scripts', [$this, 'disable_comment_assets'], 100);
