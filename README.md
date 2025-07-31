@@ -38,6 +38,32 @@ Comments remain enabled by default. To disable them, set this filter to return t
 add_filter('wpbaseline_disable_comments', '__return_true');
 ```
 
+When comments are disabled, WP Baseline comprehensively removes all comment functionality:
+
+**Backend Changes:**
+- Removes comment support from all post types
+- Closes comments on all existing posts
+- Removes Comments menu from admin
+- Removes Discussion settings page
+- Removes comment widgets from dashboard
+- Redirects comment admin pages to dashboard
+- Removes comment link from admin bar
+- Disables comment REST API endpoints
+
+**Frontend Changes:**
+- Disables comment feeds
+- Removes Recent Comments widget
+- Dequeues comment reply scripts
+- Removes discussion panel from block editor
+
+**Block Editor:**
+- Removes all comment-related blocks including:
+  - Comment templates and content
+  - Comment forms and reply links
+  - Comment pagination
+  - Latest comments
+  - Post comment counts and links
+
 ### Howdy Text
 
 By default the "Howdy" text is removed from the admin bar. You can customize this and add your own text using the following filter:
