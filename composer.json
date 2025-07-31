@@ -2,7 +2,7 @@
 	"name": "builtnorth/wp-baseline",
 	"description": "Adds baseline functionality to WordPress. For example, security features, admin cleanup, svg sanitization, and more.",
 	"type": "library",
-	"version": "3.0.2",
+	"version": "3.1.0",
 	"license": "GPL-2.0-or-later",
 	"authors": [
 		{
