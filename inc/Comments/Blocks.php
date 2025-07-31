@@ -25,7 +25,7 @@ class Blocks
 			return;
 		}
 
-		add_filter('allowed_block_types_all', [$this, 'disable_comment_blocks'], 10, 2);
+		add_filter('allowed_block_types_all', [$this, 'disable_comment_blocks'], 999, 2);
 	}
 
 	/**
@@ -37,18 +37,38 @@ class Blocks
 	 */
 	public function disable_comment_blocks($allowed_block_types, $block_editor_context)
 	{
+		// If another filter has already limited the blocks, respect that
+		if ($allowed_block_types === false) {
+			// No blocks allowed, return as is
+			return $allowed_block_types;
+		}
+
 		// Get the list of comment-related blocks
 		$comment_blocks = $this->get_comment_blocks();
 
-		// If allowed_block_types is true (all blocks allowed), we need to get all registered blocks
+		// If all blocks are allowed (true), we need to be more careful
 		if ($allowed_block_types === true) {
-			$registered_blocks = \WP_Block_Type_Registry::get_instance()->get_all_registered();
-			$allowed_block_types = array_keys($registered_blocks);
+			// Instead of converting to array, use a different approach
+			// Register a separate filter to unregister comment blocks
+			add_action('enqueue_block_editor_assets', function() use ($comment_blocks) {
+				wp_add_inline_script(
+					'wp-blocks',
+					'wp.domReady(function() {
+						const commentBlocks = ' . json_encode($comment_blocks) . ';
+						commentBlocks.forEach(function(blockName) {
+							if (wp.blocks.getBlockType(blockName)) {
+								wp.blocks.unregisterBlockType(blockName);
+							}
+						});
+					});'
+				);
+			});
+			return $allowed_block_types;
 		}
 
-		// Remove comment blocks from the allowed list
+		// If we have an array of allowed blocks, remove comment blocks
 		if (is_array($allowed_block_types)) {
-			$allowed_block_types = array_diff($allowed_block_types, $comment_blocks);
+			$allowed_block_types = array_values(array_diff($allowed_block_types, $comment_blocks));
 		}
 
 		return $allowed_block_types;
@@ -75,13 +95,8 @@ class Blocks
 			'core/comments-pagination-previous',
 			'core/comments-title',
 			'core/latest-comments',
-			'core/post-comments-count',
+			'core/post-comments',
 			'core/post-comments-form',
-			'core/post-comments-link',
-			'core/post-comment-author',
-			'core/post-comment-author-avatar',
-			'core/post-comment-content',
-			'core/post-comment-date',
 		];
 	}
 }
