@@ -6,6 +6,7 @@ WP Baseline is a Composer package that provides baseline functionality for WordP
 - Enhanced security measures
 - SVG upload support with sanitization
 - Cleanup of the admin dashboard
+- Duplicate post/page functionality
 
 ## Requirements
 
@@ -20,8 +21,6 @@ This library is meant to be dropped into a theme or plugin via composer.
 2. In your main plugin file or theme's functions.php, add:
 
 ```php
-use BuiltNorth\WPBaseline;
-
 if (class_exists('BuiltNorth\WPBaseline\App')) {
     $baseline = BuiltNorth\WPBaseline\App::instance();
     $baseline->boot();
@@ -218,6 +217,43 @@ add_filter('wpbaseline_lottie_max_file_size', function() {
     return 5 * 1024 * 1024; // 5MB
 });
 ```
+
+### Duplicate Post
+
+Adds a "Duplicate" action to post and page row actions, allowing users to quickly create copies of existing content. Duplicated posts are created as drafts and include all content, meta fields, and taxonomies.
+
+The feature is enabled by default for all post types. To customize or disable:
+
+```php
+// Disable duplicate post functionality entirely
+add_filter('wp_baseline_duplicate_post_config', function($config) {
+    $config['enabled'] = false;
+    return $config;
+});
+
+// Limit to specific post types
+add_filter('wp_baseline_duplicate_post_config', function($config) {
+    $config['post_types'] = ['post', 'page', 'product'];
+    return $config;
+});
+
+// Disable for specific post types
+add_filter('wp_baseline_duplicate_post_config', function($config) {
+    // Get all public post types
+    $post_types = get_post_types(['public' => true]);
+    // Remove the ones you don't want
+    unset($post_types['attachment']);
+    $config['post_types'] = array_keys($post_types);
+    return $config;
+});
+```
+
+When a post is duplicated:
+- The new post is created as a draft with "(Copy)" appended to the title
+- All custom fields and meta data are copied
+- All taxonomies (categories, tags, etc.) are preserved
+- The user stays on the posts list with a success message
+- A link to edit the duplicate is provided in the success notice
 
 ## Disclaimer
 
