@@ -17,6 +17,7 @@ use BuiltNorth\WPBaseline\Cleanup\Init as CleanupInit;
 use BuiltNorth\WPBaseline\Comments\Init as CommentsInit;
 use BuiltNorth\WPBaseline\Security\Init as SecurityInit;
 use BuiltNorth\WPBaseline\MimeTypes\Init as MimeTypesInit;
+use BuiltNorth\WPBaseline\Utilities\Init as UtilitiesInit;
 
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;
@@ -71,5 +72,9 @@ class App
 		// Initialize mime types classes
 		$mime_types = new MimeTypesInit();
 		$mime_types->init();
+
+		// Initialize utilities classes
+		$utilities = new UtilitiesInit();
+		$utilities->init();
 	}
 }
