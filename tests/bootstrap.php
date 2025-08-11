@@ -8,8 +8,15 @@
 // Load Composer autoloader
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
+// Enable Patchwork for better function mocking in namespaces
+WP_Mock::setUsePatchwork( true );
+
 // Bootstrap WP_Mock
 WP_Mock::bootstrap();
+
+// Pre-create WordPress functions in the namespaces to prevent undefined function errors
+// This is needed because the classes are autoloaded and call functions before we can mock them
+require_once __DIR__ . '/namespace-functions.php';
 
 // Define WordPress constants that might be used
 if ( ! defined( 'ABSPATH' ) ) {

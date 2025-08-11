@@ -31,7 +31,7 @@ class AppTest extends WPMockTestCase {
 	 * Test boot method registers modules
 	 */
 	public function test_boot_registers_modules() {
-		// Mock WordPress functions
+		// Mock specific filters
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
