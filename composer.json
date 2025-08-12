@@ -2,7 +2,6 @@
   "name": "builtnorth/wp-baseline",
   "description": "Adds baseline functionality to WordPress. For example, security features, admin cleanup, svg sanitization, and more.",
   "type": "library",
-  "version": "3.2.0",
   "license": "GPL-2.0-or-later",
   "authors": [
     {
@@ -18,9 +17,40 @@
     "php": ">=8.1",
     "enshrined/svg-sanitize": "^0.20.0"
   },
+  "require-dev": {
+    "10up/wp_mock": "^1.0",
+    "mockery/mockery": "^1.5",
+    "phpunit/phpunit": "^9.0",
+    "builtnorth/coding-standards": "*"
+  },
   "autoload": {
     "psr-4": {
       "BuiltNorth\\WPBaseline\\": "inc/"
     }
-  }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "BuiltNorth\\WPBaseline\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test:unit": "phpunit --testsuite Unit",
+    "test:coverage": "phpunit --coverage-html coverage",
+    "lint": "phpcs",
+    "lint:fix": "phpcbf",
+    "phpcs": "phpcs",
+    "phpcs:summary": "phpcs --report=summary",
+    "phpcbf": "phpcbf",
+    "phpcompat": "phpcs -p inc --standard=PHPCompatibility --runtime-set testVersion 8.1-"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
