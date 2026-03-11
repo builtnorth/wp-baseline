@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": ">=8.0",
-    "enshrined/svg-sanitize": "^0.20.0"
+    "enshrined/svg-sanitize": "^0.22.0"
   },
   "require-dev": {
     "10up/wp_mock": "^1.0",
