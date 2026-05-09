@@ -58,8 +58,8 @@ class Actions
 		}
 
 		$wpdb = $GLOBALS['wpdb'];
-		$has_open_comments = (int) $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE comment_status = 'open'");
-		if ($has_open_comments > 0) {
+		$has_open_comments = $wpdb->get_var("SELECT ID FROM {$wpdb->posts} WHERE comment_status = 'open' LIMIT 1");
+		if (!empty($has_open_comments)) {
 			$wpdb->query("UPDATE {$wpdb->posts} SET comment_status = 'closed' WHERE comment_status = 'open'");
 		}
 

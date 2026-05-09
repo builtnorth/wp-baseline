@@ -150,7 +150,7 @@ class DuplicatePost
 	public function duplicate_post()
 	{
 		$post_id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
-		$nonce = isset($_GET['duplicate_nonce']) ? sanitize_text_field(wp_unslash($_GET['duplicate_nonce'])) : '';
+		$nonce = isset($_GET['duplicate_nonce']) ? wp_unslash($_GET['duplicate_nonce']) : '';
 
 		// Verify nonce
 		if (!$post_id || !$nonce || !wp_verify_nonce($nonce, 'duplicate_post_' . $post_id)) {
@@ -265,17 +265,17 @@ class DuplicatePost
 		$post_meta_infos = get_post_meta($old_id);
 
 		if (count($post_meta_infos) != 0) {
-			foreach ($post_meta_infos as $meta_key => $meta_value_array) {
+			foreach ($post_meta_infos as $meta_key => $meta_values) {
 				// Skip certain meta keys
 				if ($this->should_skip_meta($meta_key)) {
 					continue;
 				}
 
-				if (!is_array($meta_value_array)) {
+				if (!is_array($meta_values)) {
 					continue;
 				}
 
-				foreach ($meta_value_array as $meta_value) {
+				foreach ($meta_values as $meta_value) {
 					$meta_value = maybe_unserialize($meta_value);
 					add_post_meta($new_id, $meta_key, $meta_value);
 				}
