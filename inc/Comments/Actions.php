@@ -58,7 +58,10 @@ class Actions
 		}
 
 		$wpdb = $GLOBALS['wpdb'];
-		$wpdb->query("UPDATE $wpdb->posts SET comment_status = 'closed'");
+		$has_open_comments = (int) $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->posts} WHERE comment_status = 'open'");
+		if ($has_open_comments > 0) {
+			$wpdb->query("UPDATE {$wpdb->posts} SET comment_status = 'closed' WHERE comment_status = 'open'");
+		}
 
 		add_filter('rest_allow_anonymous_comments', '__return_false');
 		add_filter('comments_open', '__return_false', 20, 2);
@@ -106,7 +109,6 @@ class Actions
 	public function disable_comment_assets()
 	{
 		wp_dequeue_script('comment-reply');
-		wp_dequeue_style('wp-admin');
 	}
 
 	/**
@@ -125,7 +127,7 @@ class Actions
 		global $pagenow;
 
 		if ($pagenow === 'edit-comments.php') {
-			wp_redirect(admin_url());
+			wp_safe_redirect(admin_url());
 			exit;
 		}
 	}

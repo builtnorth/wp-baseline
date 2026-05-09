@@ -42,7 +42,17 @@ class Upload
 	 */
 	public function check_svg_filetype($data, $file, $filename, $mimes)
 	{
+		$file_extension = strtolower(pathinfo((string) $filename, PATHINFO_EXTENSION));
+		if ('svg' !== $file_extension) {
+			return $data;
+		}
+
 		$filetype = wp_check_filetype($filename, $mimes);
+
+		if (empty($filetype['ext']) || empty($filetype['type'])) {
+			return $data;
+		}
+
 		return [
 			'ext'             => $filetype['ext'],
 			'type'            => $filetype['type'],

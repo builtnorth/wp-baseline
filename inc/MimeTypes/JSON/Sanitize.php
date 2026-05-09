@@ -46,7 +46,7 @@ class Sanitize
 		$content = file_get_contents($file['tmp_name']);
 		
 		if ($content === false) {
-			$file['error'] = __('Could not read JSON file.', 'built-wp-baseline');
+			$file['error'] = __('Could not read JSON file.', 'wp-baseline');
 			return $file;
 		}
 
@@ -54,7 +54,7 @@ class Sanitize
 		$decoded = json_decode($content, true);
 		
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			$file['error'] = __('Invalid JSON file format.', 'built-wp-baseline');
+			$file['error'] = __('Invalid JSON file format.', 'wp-baseline');
 			return $file;
 		}
 
@@ -65,13 +65,13 @@ class Sanitize
 		$sanitized_json = json_encode($sanitized_content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 		
 		if ($sanitized_json === false) {
-			$file['error'] = __('Could not process JSON file.', 'built-wp-baseline');
+			$file['error'] = __('Could not process JSON file.', 'wp-baseline');
 			return $file;
 		}
 
 		// Write the sanitized content back to the temporary file
 		if (file_put_contents($file['tmp_name'], $sanitized_json) === false) {
-			$file['error'] = __('Could not save sanitized JSON file.', 'built-wp-baseline');
+			$file['error'] = __('Could not save sanitized JSON file.', 'wp-baseline');
 			return $file;
 		}
 

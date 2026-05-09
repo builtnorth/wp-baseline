@@ -39,10 +39,10 @@ class Headers
 	 */
 	private const CSP_DIRECTIVES = [
 		'default-src'  => "'self'",
-		'script-src'   => "'self' 'unsafe-inline' 'unsafe-eval' https: *.googleapis.com *.gstatic.com *.google.com *.google-analytics.com *.doubleclick.net *.wordpress.org *.wp.com *.mapbox.com *.tiles.mapbox.com",
+		'script-src'   => "'self' 'unsafe-inline' https: *.googleapis.com *.gstatic.com *.google.com *.google-analytics.com *.doubleclick.net *.wordpress.org *.wp.com *.mapbox.com *.tiles.mapbox.com",
 		'style-src'    => "'self' 'unsafe-inline' https:",
 		'worker-src'   => "'self' blob:",
-		'img-src'      => "'self' data: https: *",
+		'img-src'      => "'self' data: https:",
 		'font-src'     => "'self' data: https:",
 		'connect-src'  => "'self' https:",
 		'media-src'    => "'self' https:",
@@ -83,11 +83,20 @@ class Headers
 	 */
 	private function set_security_headers(): void
 	{
+		if (headers_sent()) {
+			return;
+		}
+
 		// Apply security headers
 		$headers = apply_filters('wpbaseline_security_headers', self::SECURITY_HEADERS);
+		$is_ssl = function_exists('is_ssl') && is_ssl();
 
 		// Loop through headers and set them
 		foreach ($headers as $name => $value) {
+			if ('Strict-Transport-Security' === $name && !$is_ssl) {
+				continue;
+			}
+
 			header("$name: $value");
 		}
 	}
