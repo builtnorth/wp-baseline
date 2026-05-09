@@ -89,7 +89,7 @@ class Headers
 
 		// Apply security headers
 		$headers = apply_filters('wpbaseline_security_headers', self::SECURITY_HEADERS);
-		$is_ssl = function_exists('is_ssl') && is_ssl();
+		$is_ssl = is_ssl();
 
 		// Loop through headers and set them
 		foreach ($headers as $name => $value) {

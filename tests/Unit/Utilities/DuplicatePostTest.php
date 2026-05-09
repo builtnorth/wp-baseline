@@ -51,4 +51,3 @@ class DuplicatePostTest extends WPMockTestCase {
 		$this->assertFalse( $result );
 	}
 }
-

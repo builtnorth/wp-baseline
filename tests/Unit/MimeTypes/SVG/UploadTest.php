@@ -63,4 +63,3 @@ class UploadTest extends WPMockTestCase {
 		$this->assertSame( 'image/svg+xml', $result['type'] );
 	}
 }
-

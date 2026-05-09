@@ -265,17 +265,17 @@ class DuplicatePost
 		$post_meta_infos = get_post_meta($old_id);
 
 		if (count($post_meta_infos) != 0) {
-			foreach ($post_meta_infos as $meta_key => $meta_values) {
+			foreach ($post_meta_infos as $meta_key => $meta_value_array) {
 				// Skip certain meta keys
 				if ($this->should_skip_meta($meta_key)) {
 					continue;
 				}
 
-				if (!is_array($meta_values)) {
+				if (!is_array($meta_value_array)) {
 					continue;
 				}
 
-				foreach ($meta_values as $meta_value) {
+				foreach ($meta_value_array as $meta_value) {
 					$meta_value = maybe_unserialize($meta_value);
 					add_post_meta($new_id, $meta_key, $meta_value);
 				}
