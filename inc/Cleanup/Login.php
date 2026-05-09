@@ -35,8 +35,7 @@ class Login
 	public function custom_login_logo()
 	{
 		if (has_custom_logo()) :
-			$custom_logo_id = get_theme_mod('custom_logo');
-			$image = $custom_logo_id ? wp_get_attachment_image_src((int) $custom_logo_id, 'full') : false;
+			$image = wp_get_attachment_image_src((int) get_theme_mod('custom_logo'), 'full');
 			if (!$image || empty($image[0])) {
 				return;
 			}
