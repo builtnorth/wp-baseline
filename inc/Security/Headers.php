@@ -39,7 +39,7 @@ class Headers
 	 */
 	private const CSP_DIRECTIVES = [
 		'default-src'  => "'self'",
-		'script-src'   => "'self' 'unsafe-inline' https: *.googleapis.com *.gstatic.com *.google.com *.google-analytics.com *.doubleclick.net *.wordpress.org *.wp.com *.mapbox.com *.tiles.mapbox.com",
+		'script-src'   => "'self' 'unsafe-inline' 'wasm-unsafe-eval' https: *.googleapis.com *.gstatic.com *.google.com *.google-analytics.com *.doubleclick.net *.wordpress.org *.wp.com *.mapbox.com *.tiles.mapbox.com",
 		'style-src'    => "'self' 'unsafe-inline' https:",
 		'worker-src'   => "'self' blob:",
 		'img-src'      => "'self' data: https:",

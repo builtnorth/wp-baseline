@@ -306,11 +306,11 @@ class DuplicatePost
 	 */
 	public function show_duplicate_notice()
 	{
-		$duplicated = isset($_GET['duplicated']) ? absint(sanitize_text_field(wp_unslash($_GET['duplicated']))) : 0;
+		$duplicated = isset($_GET['duplicated']) ? absint(wp_unslash($_GET['duplicated'])) : 0;
 		if ($duplicated === 1) {
 			$message = __('Post duplicated successfully.', 'wp-baseline');
 			if (isset($_GET['duplicate_id'])) {
-				$duplicate_id = absint(sanitize_text_field(wp_unslash($_GET['duplicate_id'])));
+				$duplicate_id = absint(wp_unslash($_GET['duplicate_id']));
 				$edit_link = get_edit_post_link($duplicate_id);
 				if ($edit_link) {
 					$message .= ' <a href="' . esc_url($edit_link) . '">' . __('Edit duplicate', 'wp-baseline') . '</a>';
