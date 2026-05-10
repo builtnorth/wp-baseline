@@ -35,7 +35,10 @@ class Login
 	public function custom_login_logo()
 	{
 		if (has_custom_logo()) :
-			$image = wp_get_attachment_image_src(get_option('site_logo'), 'full');
+			$image = wp_get_attachment_image_src((int) get_theme_mod('custom_logo'), 'full');
+			if (!$image || empty($image[0])) {
+				return;
+			}
 ?>
 			<style type="text/css">
 				.login h1 a {
