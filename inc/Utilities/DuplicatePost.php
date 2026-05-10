@@ -81,6 +81,10 @@ class DuplicatePost
 	 */
 	public function add_duplicate_link($actions, $post)
 	{
+		if (!($post instanceof \WP_Post)) {
+			return $actions;
+		}
+
 		// Check if this post type is allowed
 		if (!$this->is_post_type_allowed($post->post_type)) {
 			return $actions;
@@ -132,6 +136,11 @@ class DuplicatePost
 	protected function can_duplicate_post($post)
 	{
 		$post_type_object = get_post_type_object($post->post_type);
+
+		if (!$post_type_object || !isset($post_type_object->cap->edit_posts)) {
+			return false;
+		}
+
 		return current_user_can($post_type_object->cap->edit_posts);
 	}
 
@@ -140,16 +149,12 @@ class DuplicatePost
 	 */
 	public function duplicate_post()
 	{
+		$post_id = isset($_GET['post']) ? absint(wp_unslash($_GET['post'])) : 0;
+		$nonce = isset($_GET['duplicate_nonce']) ? wp_unslash($_GET['duplicate_nonce']) : '';
+
 		// Verify nonce
-		if (!isset($_GET['duplicate_nonce']) || !wp_verify_nonce($_GET['duplicate_nonce'], 'duplicate_post_' . $_GET['post'])) {
+		if (!$post_id || !$nonce || !wp_verify_nonce($nonce, 'duplicate_post_' . $post_id)) {
 			wp_die(__('Security check failed.', 'wp-baseline'));
-		}
-
-		// Get post ID
-		$post_id = isset($_GET['post']) ? absint($_GET['post']) : 0;
-
-		if (!$post_id) {
-			wp_die(__('No post to duplicate has been supplied!', 'wp-baseline'));
 		}
 
 		// Get the original post
@@ -174,10 +179,9 @@ class DuplicatePost
 
 		if ($new_post_id) {
 			// Redirect back to the posts list with success message
+			$fallback_url = admin_url('edit.php?post_type=' . $post->post_type);
 			$redirect_url = wp_get_referer();
-			if (!$redirect_url) {
-				$redirect_url = admin_url('edit.php?post_type=' . $post->post_type);
-			}
+			$redirect_url = $redirect_url ? wp_validate_redirect($redirect_url, $fallback_url) : $fallback_url;
 			
 			// Add success message parameter
 			$redirect_url = add_query_arg([
@@ -185,7 +189,7 @@ class DuplicatePost
 				'duplicate_id' => $new_post_id
 			], $redirect_url);
 			
-			wp_redirect($redirect_url);
+			wp_safe_redirect($redirect_url);
 			exit;
 		} else {
 			wp_die(__('Post creation failed', 'wp-baseline'));
@@ -261,15 +265,20 @@ class DuplicatePost
 		$post_meta_infos = get_post_meta($old_id);
 
 		if (count($post_meta_infos) != 0) {
-			foreach ($post_meta_infos as $meta_key => $meta_value) {
+			foreach ($post_meta_infos as $meta_key => $meta_values) {
 				// Skip certain meta keys
 				if ($this->should_skip_meta($meta_key)) {
 					continue;
 				}
 
-				// Handle serialized data
-				$meta_value = maybe_unserialize($meta_value[0]);
-				add_post_meta($new_id, $meta_key, $meta_value);
+				if (!is_array($meta_values)) {
+					continue;
+				}
+
+				foreach ($meta_values as $meta_value) {
+					$meta_value = maybe_unserialize($meta_value);
+					add_post_meta($new_id, $meta_key, $meta_value);
+				}
 			}
 		}
 	}
@@ -297,17 +306,19 @@ class DuplicatePost
 	 */
 	public function show_duplicate_notice()
 	{
-		if (isset($_GET['duplicated']) && $_GET['duplicated'] == '1') {
+		$duplicated = isset($_GET['duplicated']) ? absint(wp_unslash($_GET['duplicated'])) : 0;
+		if ($duplicated === 1) {
 			$message = __('Post duplicated successfully.', 'wp-baseline');
 			if (isset($_GET['duplicate_id'])) {
-				$edit_link = get_edit_post_link($_GET['duplicate_id']);
+				$duplicate_id = absint(wp_unslash($_GET['duplicate_id']));
+				$edit_link = get_edit_post_link($duplicate_id);
 				if ($edit_link) {
 					$message .= ' <a href="' . esc_url($edit_link) . '">' . __('Edit duplicate', 'wp-baseline') . '</a>';
 				}
 			}
 			printf(
 				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
-				$message
+				wp_kses_post($message)
 			);
 		}
 	}

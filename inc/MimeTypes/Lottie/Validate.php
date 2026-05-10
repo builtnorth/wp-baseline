@@ -46,7 +46,7 @@ class Validate
 		$max_size = apply_filters('wpbaseline_lottie_max_file_size', 10 * 1024 * 1024); // 10MB default
 		if ($file['size'] > $max_size) {
 			$file['error'] = sprintf(
-				__('Lottie file is too large. Maximum size is %s.', 'built-wp-baseline'),
+				__('Lottie file is too large. Maximum size is %s.', 'wp-baseline'),
 				size_format($max_size)
 			);
 			return $file;
@@ -54,7 +54,7 @@ class Validate
 
 		// Validate file structure
 		if (!$this->validate_lottie_structure($file)) {
-			$file['error'] = __('Invalid Lottie file format.', 'built-wp-baseline');
+			$file['error'] = __('Invalid Lottie file format.', 'wp-baseline');
 			return $file;
 		}
 

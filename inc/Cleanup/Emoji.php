@@ -51,8 +51,10 @@ class Emoji
 		// Remove emoji CDN hostname from DNS prefetching hints
 		add_filter('wp_resource_hints', [$this, 'disable_emojis_remove_dns_prefetch'], 10, 2);
 
-		// Finally, disable it from the database
-		update_option('use_smilies', false);
+		// Finally, disable it from the database if needed
+		if (false !== get_option('use_smilies')) {
+			update_option('use_smilies', false);
+		}
 	}
 
 	/**
