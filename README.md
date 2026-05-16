@@ -48,6 +48,7 @@ When comments are disabled, WP Baseline comprehensively removes all comment func
 - Redirects comment admin pages to dashboard
 - Removes comment link from admin bar
 - Disables comment REST API endpoints
+- Disables block editor notes (prevents `/wp/v2/comments?type=note` requests when the REST route is removed)
 
 **Frontend Changes:**
 - Disables comment feeds
