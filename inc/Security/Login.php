@@ -35,17 +35,29 @@ class Login
 	 */
 	public function prevent_username_login($user, $username, $password)
 	{
-		if (!empty($username) && is_email($username)) {
+		// Let core handle empty credentials on initial GET (wp_signon runs before the form).
+		if ($username === '' || $username === null) {
 			return $user;
 		}
+
+		if (is_email($username)) {
+			return $user;
+		}
+
 		return new \WP_Error('invalid_email', __('Please use your email address to login.', 'wp-baseline'));
 	}
 
 	/**
-	 * Returns a generic login error message
+	 * Returns a generic login error message.
+	 *
+	 * @param string $errors HTML error messages from the login screen.
 	 */
-	public function generic_login_error()
+	public function generic_login_error($errors)
 	{
+		if ($errors === '') {
+			return $errors;
+		}
+
 		return __('The email address or password you entered is incorrect.', 'wp-baseline');
 	}
 
