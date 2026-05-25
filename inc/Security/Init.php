@@ -41,7 +41,6 @@ class Init extends AbstractInit
 			'Headers',
 			'Login',
 			'RestAPI',
-			'UserRegistrationPolicy',
 		];
 	}
 }
