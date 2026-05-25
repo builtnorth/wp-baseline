@@ -44,7 +44,7 @@ class Headers
 		'worker-src'   => "'self' blob:",
 		'img-src'      => "'self' data: https:",
 		'font-src'     => "'self' data: https:",
-		'connect-src'  => "'self' https: tiles.openfreemap.org photon.komoot.io",
+		'connect-src'  => "'self' https: tiles.openfreemap.org nominatim.openstreetmap.org",
 		'media-src'    => "'self' https:",
 		'object-src'   => "'none'",
 		'frame-src'    => "'self' https:",
