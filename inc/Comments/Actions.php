@@ -25,15 +25,18 @@ class Actions
 			return;
 		}
 
-		// If init has already fired, run immediately
+		add_filter('register_post_type_args', [$this, 'strip_editor_notes_from_post_type_args'], 10, 2);
+		add_action('registered_post_type', [$this, 'disable_editor_notes_support'], 999, 2);
+
+		// Run late on init so post types registered after priority 0 are included.
 		if (did_action('init')) {
 			$this->disable_comments();
 			$this->disable_comment_feeds();
 		} else {
-			add_action('init', [$this, 'disable_comments']);
+			add_action('init', [$this, 'disable_comments'], 999);
 			add_action('init', [$this, 'disable_comment_feeds']);
 		}
-		
+
 		add_action('admin_menu', [$this, 'remove_dashboard_sections']);
 		add_action('wp_before_admin_bar_render', [$this, 'hide_admin_toolbar_link']);
 		add_action('widgets_init', [$this, 'disable_comment_widgets']);
@@ -55,6 +58,8 @@ class Actions
 				remove_post_type_support($post_type, 'comments');
 				remove_post_type_support($post_type, 'trackbacks');
 			}
+
+			$this->disable_editor_notes_support($post_type);
 		}
 
 		$wpdb = $GLOBALS['wpdb'];
@@ -66,6 +71,73 @@ class Actions
 		add_filter('rest_allow_anonymous_comments', '__return_false');
 		add_filter('comments_open', '__return_false', 20, 2);
 		add_filter('pings_open', '__return_false', 20, 2);
+	}
+
+	/**
+	 * Strip editor notes from post type args before registration.
+	 *
+	 * @param array  $args      Post type registration arguments.
+	 * @param string $post_type Post type name.
+	 */
+	public function strip_editor_notes_from_post_type_args(array $args, string $post_type): array
+	{
+		if (empty($args['supports']) || !is_array($args['supports'])) {
+			return $args;
+		}
+
+		$supports = [];
+
+		foreach ($args['supports'] as $key => $value) {
+			if ('editor' === $key && is_array($value)) {
+				unset($value['notes']);
+				if ($value === []) {
+					$supports[] = 'editor';
+					continue;
+				}
+				$supports[$key] = $value;
+				continue;
+			}
+
+			if (is_int($key)) {
+				$supports[] = $value;
+				continue;
+			}
+
+			$supports[$key] = $value;
+		}
+
+		$args['supports'] = $supports;
+
+		return $args;
+	}
+
+	/**
+	 * Remove block editor notes support so the editor does not call the comments REST API.
+	 *
+	 * Core registers posts/pages with `editor => [ 'notes' => true ]`, which mounts the
+	 * collaboration sidebar and requests /wp/v2/comments?type=note even when discussion
+	 * comments are closed. That conflicts with disabled comment REST routes.
+	 */
+	public function disable_editor_notes_support(string $post_type): void
+	{
+		if (!post_type_supports($post_type, 'editor')) {
+			return;
+		}
+
+		$supports = get_all_post_type_supports($post_type);
+		$editor_support = $supports['editor'] ?? null;
+
+		if (!is_array($editor_support)) {
+			return;
+		}
+
+		foreach ($editor_support as $item) {
+			if (!empty($item['notes'])) {
+				remove_post_type_support($post_type, 'editor');
+				add_post_type_support($post_type, 'editor');
+				return;
+			}
+		}
 	}
 
 	/**
