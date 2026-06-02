@@ -24,12 +24,12 @@ class Headers
 	 * @var array
 	 */
 	private const SECURITY_HEADERS = [
-		'X-Content-Type-Options' => 'nosniff',
-		'X-Frame-Options' => 'SAMEORIGIN',
-		'X-XSS-Protection' => '1; mode=block',
-		'Referrer-Policy' => 'strict-origin-when-cross-origin',
-		'Permissions-Policy' => 'geolocation=(), microphone=()',
-		'Strict-Transport-Security' => 'max-age=31536000; includeSubDomains',
+		'X-Content-Type-Options'        => 'nosniff',
+		'X-Frame-Options'               => 'SAMEORIGIN',
+		'Referrer-Policy'               => 'strict-origin-when-cross-origin',
+		'Permissions-Policy'            => 'geolocation=(), microphone=()',
+		'Strict-Transport-Security'     => 'max-age=31536000; includeSubDomains',
+		'Cross-Origin-Opener-Policy'    => 'same-origin-allow-popups',
 	];
 
 	/**
@@ -46,10 +46,11 @@ class Headers
 		'font-src'     => "'self' data: https:",
 		'connect-src'  => "'self' https: tiles.openfreemap.org nominatim.openstreetmap.org",
 		'media-src'    => "'self' https:",
-		'object-src'   => "'none'",
-		'frame-src'    => "'self' https:",
-		'base-uri'     => "'self'",
-		'form-action'  => "'self'",
+		'object-src'      => "'none'",
+		'frame-src'       => "'self' https:",
+		'frame-ancestors' => "'self'",
+		'base-uri'        => "'self'",
+		'form-action'     => "'self'",
 	];
 
 	/**
