@@ -23,8 +23,9 @@ class AdminBar
 	 */
 	public function init()
 	{
-		add_filter('admin_bar_menu', [$this, 'replace_wordpress_howdy'], 9992);
-		add_filter('admin_bar_menu', [$this, 'remove_admin_nodes'], 999);
+		// Run after core registers all nodes (search is added at priority 9999).
+		add_action('admin_bar_menu', [$this, 'replace_wordpress_howdy'], 9992);
+		add_action('admin_bar_menu', [$this, 'remove_admin_nodes'], 10000);
 	}
 
 	/**
@@ -59,16 +60,25 @@ class AdminBar
 			return $wp_admin_bar;
 		}
 
-		// Default nodes to remove
-		$default_nodes_to_remove = [
+		$nodes_to_remove = [
 			'wp-logo',
 			'search',
 			'updates',
 		];
 
-		// Remove the default nodes
-		foreach ($default_nodes_to_remove as $node) {
+		$nodes_to_remove = apply_filters('wpbaseline_admin_bar_nodes_to_remove', $nodes_to_remove);
+
+		foreach ($nodes_to_remove as $node) {
+			if (! is_string($node) || $node === '') {
+				continue;
+			}
+
 			$wp_admin_bar->remove_node($node);
+		}
+
+		if (defined('DISALLOW_FILE_MODS')) {
+			$wp_admin_bar->remove_node('plugins');
+			$wp_admin_bar->remove_node('themes');
 		}
 
 		return $wp_admin_bar;
