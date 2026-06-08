@@ -145,11 +145,15 @@ add_filter('wpbaseline_security_headers', function($headers) {
 
 ### Login Security
 
-The following items have been added to enhance login security:
+When enabled (default), login security includes:
 
-- Prevent username login
-- Returnsa generic login error message
-- Disable autocomplete for login fields
+- Require email address for sign-in (username attempts are rejected)
+- Update the login field label and placeholder to "Email address"
+- Return a generic login error message for credential failures (username-format attempts show a specific message)
+- Always clear the login field after a failed sign-in attempt
+- Disable browser autocomplete on login fields
+
+WordPress normally repopulates the login field when the submitted email exists but the password is wrong, while clearing it for unknown emails. That behavior leaks account existence even with a generic error message. WP Baseline remaps those core error codes so the field is always cleared after failure.
 
 To disable login security enhancements, use the following filter:
 
