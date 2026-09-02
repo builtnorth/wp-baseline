@@ -55,7 +55,8 @@
   "prefer-stable": true,
   "extra": {
     "branch-alias": {
-      "dev-main": "3.2.x-dev"
+      "dev-main": "3.3.x-dev",
+      "dev-dev": "3.3.x-dev"
     }
   }
 }
