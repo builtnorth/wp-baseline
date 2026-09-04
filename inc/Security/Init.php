@@ -38,6 +38,7 @@ class Init extends AbstractInit
 			'Pingbacks',
 			'Version',
 			'XMLRPC',
+			'UploadsExecution',
 			'Headers',
 			'Login',
 			'RestAPI',

@@ -173,6 +173,14 @@ XMLRPC is disabled by default. To re-enable it, use the following filter:
 add_filter('wpbaseline_disable_xmlrpc', '__return_false');
 ```
 
+### Uploads PHP Execution
+
+PHP execution is blocked inside the uploads directory by default (a common technique for persisting malicious code after a compromise). To disable this:
+
+```php
+add_filter('wpbaseline_block_uploads_php_execution', '__return_false');
+```
+
 ### SVG Support
 
 Adds support for SVG uploads. SVGs are automatically sanitized upon upload using the [enshrined/svg-sanitize](https://github.com/darylldoyle/svg-sanitizer) library for security to remove potentially malicious content.
