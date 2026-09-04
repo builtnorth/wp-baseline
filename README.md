@@ -165,6 +165,14 @@ REST API user endpoints are restricted to users with the `list_users` capability
 add_filter('wpbaseline_disable_user_rest_endpoints', '__return_false');
 ```
 
+### Author Enumeration
+
+Requests like `?author=2` are blocked with a 404 by default for anyone without the `list_users` capability, instead of being redirected to `/author/username/` and revealing a valid username. Author archive URLs themselves (`/author/username/`) are unaffected. To disable this:
+
+```php
+add_filter('wpbaseline_block_author_enumeration', '__return_false');
+```
+
 ### XMLRPC
 
 XMLRPC is disabled by default. To re-enable it, use the following filter:

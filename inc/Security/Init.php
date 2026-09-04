@@ -39,6 +39,7 @@ class Init extends AbstractInit
 			'Version',
 			'XMLRPC',
 			'UploadsExecution',
+			'AuthorEnumeration',
 			'Headers',
 			'Login',
 			'RestAPI',
