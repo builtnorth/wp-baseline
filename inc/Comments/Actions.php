@@ -16,12 +16,22 @@ namespace BuiltNorth\WPBaseline\Comments;
 class Actions
 {
 	/**
+	 * Option set after open comment_status rows have been closed once.
+	 * Avoids SELECT/UPDATE on every init on shared hosts.
+	 */
+	private const COMMENTS_CLOSED_OPTION = 'wpbaseline_comments_db_closed';
+
+	/**
 	 * Initialize the class.
 	 */
 	public function init()
 	{
 		// Check if comments should be disabled
 		if (!apply_filters('wpbaseline_disable_comments', false)) {
+			// Allow a future re-enable → disable cycle to close newly opened posts.
+			if (get_option(self::COMMENTS_CLOSED_OPTION)) {
+				delete_option(self::COMMENTS_CLOSED_OPTION);
+			}
 			return;
 		}
 
@@ -62,15 +72,29 @@ class Actions
 			$this->disable_editor_notes_support($post_type);
 		}
 
+		$this->close_open_comment_status_once();
+
+		add_filter('rest_allow_anonymous_comments', '__return_false');
+		add_filter('comments_open', '__return_false', 20, 2);
+		add_filter('pings_open', '__return_false', 20, 2);
+	}
+
+	/**
+	 * Close posts still marked comment_status=open — once per disable cycle.
+	 */
+	private function close_open_comment_status_once(): void
+	{
+		if (get_option(self::COMMENTS_CLOSED_OPTION)) {
+			return;
+		}
+
 		$wpdb = $GLOBALS['wpdb'];
 		$has_open_comments = $wpdb->get_var("SELECT ID FROM {$wpdb->posts} WHERE comment_status = 'open' LIMIT 1");
 		if (!empty($has_open_comments)) {
 			$wpdb->query("UPDATE {$wpdb->posts} SET comment_status = 'closed' WHERE comment_status = 'open'");
 		}
 
-		add_filter('rest_allow_anonymous_comments', '__return_false');
-		add_filter('comments_open', '__return_false', 20, 2);
-		add_filter('pings_open', '__return_false', 20, 2);
+		update_option(self::COMMENTS_CLOSED_OPTION, time(), false);
 	}
 
 	/**
