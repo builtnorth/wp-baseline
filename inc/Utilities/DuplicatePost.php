@@ -141,7 +141,17 @@ class DuplicatePost
 			return false;
 		}
 
-		return current_user_can($post_type_object->cap->edit_posts);
+		$can = current_user_can($post_type_object->cap->edit_posts);
+
+		/**
+		 * Whether a specific post may be duplicated.
+		 *
+		 * Runs for both the list-table link and the duplicate admin action.
+		 *
+		 * @param bool     $can  Whether duplication is allowed. Default: edit_posts capability.
+		 * @param \WP_Post $post Post being duplicated.
+		 */
+		return (bool) apply_filters('wp_baseline_can_duplicate_post', $can, $post);
 	}
 
 	/**

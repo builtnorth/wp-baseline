@@ -263,6 +263,14 @@ add_filter('wp_baseline_duplicate_post_config', function($config) {
     $config['post_types'] = array_keys($post_types);
     return $config;
 });
+
+// Deny duplication for a specific post (list link + admin action)
+add_filter('wp_baseline_can_duplicate_post', function($can, $post) {
+    if ($post instanceof WP_Post && get_post_meta($post->ID, 'my_locked_meta', true)) {
+        return false;
+    }
+    return $can;
+}, 10, 2);
 ```
 
 When a post is duplicated:
