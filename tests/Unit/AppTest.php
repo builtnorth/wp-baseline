@@ -17,6 +17,17 @@ use WP_Mock;
 class AppTest extends WPMockTestCase {
 
 	/**
+	 * Common mocks for Comments\Actions::init() side effects during boot.
+	 */
+	private function mock_comments_boot_defaults(): void {
+		WP_Mock::userFunction( 'get_option' )->andReturn( false );
+		WP_Mock::userFunction( 'delete_option' )->andReturn( true );
+		WP_Mock::userFunction( 'did_action' )->andReturn( 0 );
+		WP_Mock::userFunction( 'add_action' )->andReturn( true );
+		WP_Mock::userFunction( 'add_filter' )->andReturn( true );
+	}
+
+	/**
 	 * Test that App is a singleton
 	 */
 	public function test_app_is_singleton() {
@@ -31,6 +42,7 @@ class AppTest extends WPMockTestCase {
 	 * Test boot method registers modules
 	 */
 	public function test_boot_registers_modules() {
+		$this->mock_comments_boot_defaults();
 		// Mock specific filters
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
@@ -47,6 +59,7 @@ class AppTest extends WPMockTestCase {
 	 * Test cleanup module is registered
 	 */
 	public function test_cleanup_module_registered() {
+		$this->mock_comments_boot_defaults();
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
@@ -62,6 +75,7 @@ class AppTest extends WPMockTestCase {
 	 * Test security module is registered
 	 */
 	public function test_security_module_registered() {
+		$this->mock_comments_boot_defaults();
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
@@ -77,6 +91,7 @@ class AppTest extends WPMockTestCase {
 	 * Test mime types module is registered
 	 */
 	public function test_mime_types_module_registered() {
+		$this->mock_comments_boot_defaults();
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
@@ -92,6 +107,7 @@ class AppTest extends WPMockTestCase {
 	 * Test utilities module is registered
 	 */
 	public function test_utilities_module_registered() {
+		$this->mock_comments_boot_defaults();
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
@@ -107,6 +123,7 @@ class AppTest extends WPMockTestCase {
 	 * Test comments can be disabled via filter
 	 */
 	public function test_comments_disabled_via_filter() {
+		$this->mock_comments_boot_defaults();
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( true );
@@ -122,6 +139,7 @@ class AppTest extends WPMockTestCase {
 	 * Test comments not registered by default
 	 */
 	public function test_comments_not_registered_by_default() {
+		$this->mock_comments_boot_defaults();
 		WP_Mock::userFunction( 'apply_filters' )
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
