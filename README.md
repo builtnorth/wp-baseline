@@ -145,11 +145,15 @@ add_filter('wpbaseline_security_headers', function($headers) {
 
 ### Login Security
 
-The following items have been added to enhance login security:
+When enabled (default), login security includes:
 
-- Prevent username login
-- Returnsa generic login error message
-- Disable autocomplete for login fields
+- Require email address for sign-in (username attempts are rejected)
+- Update the login field label and placeholder to "Email address"
+- Return a generic login error message for credential failures (username-format attempts show a specific message)
+- Always clear the login field after a failed sign-in attempt
+- Disable browser autocomplete on login fields
+
+WordPress normally repopulates the login field when the submitted email exists but the password is wrong, while clearing it for unknown emails. That behavior leaks account existence even with a generic error message. WP Baseline remaps those core error codes so the field is always cleared after failure.
 
 To disable login security enhancements, use the following filter:
 
@@ -165,12 +169,28 @@ REST API user endpoints are restricted to users with the `list_users` capability
 add_filter('wpbaseline_disable_user_rest_endpoints', '__return_false');
 ```
 
+### Author Enumeration
+
+Requests like `?author=2` are blocked with a 404 by default for anyone without the `list_users` capability, instead of being redirected to `/author/username/` and revealing a valid username. Author archive URLs themselves (`/author/username/`) are unaffected. To disable this:
+
+```php
+add_filter('wpbaseline_block_author_enumeration', '__return_false');
+```
+
 ### XMLRPC
 
 XMLRPC is disabled by default. To re-enable it, use the following filter:
 
 ```php
 add_filter('wpbaseline_disable_xmlrpc', '__return_false');
+```
+
+### Uploads PHP Execution
+
+PHP execution is blocked inside the uploads directory by default (a common technique for persisting malicious code after a compromise). To disable this:
+
+```php
+add_filter('wpbaseline_block_uploads_php_execution', '__return_false');
 ```
 
 ### SVG Support
@@ -247,6 +267,14 @@ add_filter('wp_baseline_duplicate_post_config', function($config) {
     $config['post_types'] = array_keys($post_types);
     return $config;
 });
+
+// Deny duplication for a specific post (list link + admin action)
+add_filter('wp_baseline_can_duplicate_post', function($can, $post) {
+    if ($post instanceof WP_Post && get_post_meta($post->ID, 'my_locked_meta', true)) {
+        return false;
+    }
+    return $can;
+}, 10, 2);
 ```
 
 When a post is duplicated:
