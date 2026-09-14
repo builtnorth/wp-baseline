@@ -34,6 +34,10 @@ if ( $using_root_autoloader ) {
 	);
 }
 
+// Shared WP core class stand-ins (WP_Error, WP_Query, etc.) — lives in
+// whichever vendor/ $autoloader above actually resolved to (local or root).
+require_once dirname( $autoloader ) . '/builtnorth/wp-mock-stand-ins/inc/stand-ins.php';
+
 // Enable Patchwork for better function mocking in namespaces
 WP_Mock::setUsePatchwork( true );
 
@@ -69,36 +73,3 @@ if ( ! function_exists( 'wp_upload_dir' ) ) {
 	}
 }
 
-// Mock common WordPress classes if needed
-if ( ! class_exists( 'WP_Error' ) ) {
-	class WP_Error {
-		private $errors = array();
-		private $error_data = array();
-
-		public function __construct( $code = '', $message = '', $data = '' ) {
-			if ( ! empty( $code ) ) {
-				$this->errors[ $code ][] = $message;
-				if ( ! empty( $data ) ) {
-					$this->error_data[ $code ] = $data;
-				}
-			}
-		}
-
-		public function get_error_code() {
-			$codes = array_keys( $this->errors );
-			return $codes ? $codes[0] : '';
-		}
-
-		public function get_error_message( $code = '' ) {
-			if ( empty( $code ) ) {
-				$code = $this->get_error_code();
-			}
-			$messages = isset( $this->errors[ $code ] ) ? $this->errors[ $code ] : array();
-			return $messages ? $messages[0] : '';
-		}
-
-		public function has_errors() {
-			return ! empty( $this->errors );
-		}
-	}
-}
