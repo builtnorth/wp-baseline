@@ -105,6 +105,41 @@ class SanitizeTest extends WPMockTestCase {
 	}
 
 	/**
+	 * Test SVG upload is denied for a user lacking the required capability.
+	 */
+	public function test_sanitize_svg_denies_without_capability() {
+		if (!class_exists('\enshrined\svgSanitize\Sanitizer')) {
+			$this->markTestSkipped('SVG Sanitizer library not available');
+		}
+		$sanitize = new Sanitize();
+
+		$file = [
+			'name'     => 'test.svg',
+			'type'     => 'image/svg+xml',
+			'tmp_name' => '/tmp/test.svg',
+			'error'    => 0,
+			'size'     => 1024,
+		];
+
+		WP_Mock::onFilter( 'wpbaseline_mime_upload_capability' )
+			->with( 'manage_options', 'svg' )
+			->reply( 'manage_options' );
+
+		WP_Mock::userFunction( 'current_user_can' )
+			->with( 'manage_options' )
+			->andReturn( false );
+
+		WP_Mock::userFunction( '__' )
+			->andReturnUsing( function ( $text ) {
+				return $text;
+			} );
+
+		$result = $sanitize->sanitize_svg( $file );
+
+		$this->assertArrayHasKey( 'error', $result );
+	}
+
+	/**
 	 * Test SVG sanitization error handling
 	 * SKIPPED: Cannot mock PHP internal functions
 	 */

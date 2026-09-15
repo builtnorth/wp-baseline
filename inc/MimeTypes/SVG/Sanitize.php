@@ -13,6 +13,7 @@
 
 namespace BuiltNorth\WPBaseline\MimeTypes\SVG;
 
+use BuiltNorth\WPBaseline\MimeTypes\Capability;
 use enshrined\svgSanitize\Sanitizer;
 
 class Sanitize
@@ -54,6 +55,12 @@ class Sanitize
 		$declared  = (string) ($file['type'] ?? '');
 
 		if ('svg' !== $extension && 'image/svg+xml' !== $declared && 'image/svg' !== $declared) {
+			return $file;
+		}
+
+		if (!Capability::current_user_can_upload('svg')) {
+			$file['error'] = __('You do not have permission to upload SVG files.', 'wp-baseline');
+
 			return $file;
 		}
 

@@ -13,6 +13,8 @@
 
 namespace BuiltNorth\WPBaseline\MimeTypes\Lottie;
 
+use BuiltNorth\WPBaseline\MimeTypes\Capability;
+
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;
 
@@ -39,6 +41,11 @@ class Validate
 	{
 		// Check if this is a Lottie file
 		if (!$this->is_lottie_file($file)) {
+			return $file;
+		}
+
+		if (!Capability::current_user_can_upload('lottie')) {
+			$file['error'] = __('You do not have permission to upload Lottie files.', 'wp-baseline');
 			return $file;
 		}
 

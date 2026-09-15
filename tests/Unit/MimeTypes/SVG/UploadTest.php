@@ -62,4 +62,45 @@ class UploadTest extends WPMockTestCase {
 		$this->assertSame( 'svg', $result['ext'] );
 		$this->assertSame( 'image/svg+xml', $result['type'] );
 	}
+
+	/**
+	 * Test the mime type is withheld from a user lacking the required capability.
+	 */
+	public function test_add_svg_mime_type_denies_without_capability() {
+		$upload = new Upload();
+		$mimes  = [ 'jpg' => 'image/jpeg' ];
+
+		WP_Mock::onFilter( 'wpbaseline_mime_upload_capability' )
+			->with( 'manage_options', 'svg' )
+			->reply( 'manage_options' );
+
+		WP_Mock::userFunction( 'current_user_can' )
+			->with( 'manage_options' )
+			->andReturn( false );
+
+		$result = $upload->add_svg_mime_type( $mimes );
+
+		$this->assertSame( $mimes, $result );
+		$this->assertArrayNotHasKey( 'svg', $result );
+	}
+
+	/**
+	 * Test the mime type is granted to a user with the required capability.
+	 */
+	public function test_add_svg_mime_type_allows_with_capability() {
+		$upload = new Upload();
+		$mimes  = [ 'jpg' => 'image/jpeg' ];
+
+		WP_Mock::onFilter( 'wpbaseline_mime_upload_capability' )
+			->with( 'manage_options', 'svg' )
+			->reply( 'manage_options' );
+
+		WP_Mock::userFunction( 'current_user_can' )
+			->with( 'manage_options' )
+			->andReturn( true );
+
+		$result = $upload->add_svg_mime_type( $mimes );
+
+		$this->assertSame( 'image/svg+xml', $result['svg'] );
+	}
 }

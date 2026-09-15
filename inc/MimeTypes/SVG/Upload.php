@@ -13,6 +13,8 @@
 
 namespace BuiltNorth\WPBaseline\MimeTypes\SVG;
 
+use BuiltNorth\WPBaseline\MimeTypes\Capability;
+
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;
 
@@ -33,6 +35,10 @@ class Upload
 	 */
 	public function add_svg_mime_type($mimes)
 	{
+		if (!Capability::current_user_can_upload('svg')) {
+			return $mimes;
+		}
+
 		$mimes['svg'] = 'image/svg+xml';
 		return $mimes;
 	}

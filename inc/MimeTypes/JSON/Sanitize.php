@@ -13,6 +13,8 @@
 
 namespace BuiltNorth\WPBaseline\MimeTypes\JSON;
 
+use BuiltNorth\WPBaseline\MimeTypes\Capability;
+
 // Don't load directly.
 defined('ABSPATH') || defined('WP_CLI') || exit;
 
@@ -39,6 +41,11 @@ class Sanitize
 	{
 		// Only process JSON files
 		if ($file['type'] !== 'application/json') {
+			return $file;
+		}
+
+		if (!Capability::current_user_can_upload('json')) {
+			$file['error'] = __('You do not have permission to upload JSON files.', 'wp-baseline');
 			return $file;
 		}
 
