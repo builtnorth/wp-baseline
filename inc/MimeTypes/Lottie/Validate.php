@@ -123,36 +123,83 @@ class Validate
 
 	/**
 	 * Validate Lottie file structure.
-	 * 
+	 *
 	 * @param array $file File upload data.
 	 * @return bool True if structure is valid.
 	 */
 	private function validate_lottie_structure($file)
 	{
 		$extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-		
-		// .lottie files can be either JSON or compressed (ZIP) format
-		if ($extension === 'lottie') {
-			// Try to read as JSON first
-			$content = file_get_contents($file['tmp_name']);
-			if ($content === false) {
-				return false;
-			}
-			
-			// Check if it's JSON format
-			$data = json_decode($content, true);
-			if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
-				// It's JSON format, validate as Lottie JSON
-				return $this->validate_lottie_json($data);
-			}
-			
-			// If not JSON, it might be a compressed .lottie file (ZIP format)
-			// For now, we'll accept it if it's not JSON but has content
-			// More sophisticated ZIP validation could be added later
-			return strlen($content) > 0;
+
+		if ('lottie' !== $extension) {
+			return false;
 		}
 
-		return false;
+		// Try to read as JSON first
+		$content = file_get_contents($file['tmp_name']);
+		if ($content === false) {
+			return false;
+		}
+
+		// Check if it's JSON format
+		$data = json_decode($content, true);
+		if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
+			// It's JSON format, validate as Lottie JSON
+			return $this->validate_lottie_json($data);
+		}
+
+		// Not JSON: a .lottie file is otherwise a dotLottie archive, i.e. a
+		// real ZIP containing a manifest.json and an animations/ directory.
+		// A prior version accepted any non-JSON file with content > 0 here
+		// -- any arbitrary binary renamed to .lottie passed unchecked, since
+		// wp-baseline is what registers this extension as an allowed upload
+		// mime type in the first place. Validate the archive structure
+		// instead of trusting the extension.
+		return $this->validate_lottie_archive($file['tmp_name']);
+	}
+
+	/**
+	 * Validate that a file is a real dotLottie archive (ZIP containing
+	 * manifest.json and an animations/ directory), not just any binary
+	 * wearing a .lottie extension.
+	 *
+	 * @param string $tmp_name Path to the uploaded file.
+	 * @return bool True if the archive has the expected dotLottie structure.
+	 */
+	private function validate_lottie_archive($tmp_name)
+	{
+		if (!class_exists('ZipArchive')) {
+			// Fail closed: without ext-zip there is no way to verify the
+			// archive structure, and the prior behavior of accepting any
+			// non-empty file is the gap being fixed here.
+			return false;
+		}
+
+		$zip = new \ZipArchive();
+		$opened = $zip->open($tmp_name, \ZipArchive::RDONLY);
+
+		if (true !== $opened) {
+			return false;
+		}
+
+		$has_manifest = false;
+		$has_animations = false;
+
+		for ($i = 0; $i < $zip->numFiles; $i++) {
+			$entry_name = $zip->getNameIndex($i);
+
+			if ('manifest.json' === $entry_name) {
+				$has_manifest = true;
+			}
+
+			if (0 === strpos($entry_name, 'animations/')) {
+				$has_animations = true;
+			}
+		}
+
+		$zip->close();
+
+		return $has_manifest && $has_animations;
 	}
 
 	/**

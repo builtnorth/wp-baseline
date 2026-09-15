@@ -32,8 +32,21 @@ class Sanitize
 	}
 
 	/**
-	 * Sanitize JSON files before upload.
-	 * 
+	 * Validate JSON files before upload.
+	 *
+	 * application/json is never executed by a browser or server -- it is
+	 * not HTML, SVG, or script, so there is no upload-time transform that
+	 * makes it "safe" the way sanitizing an SVG does. The actual control
+	 * against stored XSS via JSON field values is output escaping by
+	 * whatever later reads and renders them, which this class cannot see
+	 * or enforce. A prior version of this method ran a blocklist regex
+	 * (stripping `<script>`, `javascript:`, `on*=`, etc.) over every
+	 * string value and re-encoded the file -- easily bypassed by any
+	 * pattern not on the list, and destructive to legitimate content
+	 * (e.g. a string containing "on = " unrelated to an event handler).
+	 * This now only confirms the upload is well-formed JSON and leaves
+	 * content untouched.
+	 *
 	 * @param array $file File upload data.
 	 * @return array Modified file data.
 	 */
@@ -51,103 +64,20 @@ class Sanitize
 
 		// Read the file content
 		$content = file_get_contents($file['tmp_name']);
-		
+
 		if ($content === false) {
 			$file['error'] = __('Could not read JSON file.', 'wp-baseline');
 			return $file;
 		}
 
 		// Validate JSON structure
-		$decoded = json_decode($content, true);
-		
+		json_decode($content, true);
+
 		if (json_last_error() !== JSON_ERROR_NONE) {
 			$file['error'] = __('Invalid JSON file format.', 'wp-baseline');
 			return $file;
 		}
 
-		// Sanitize the JSON content
-		$sanitized_content = $this->sanitize_json_content($decoded);
-		
-		// Re-encode the sanitized content
-		$sanitized_json = json_encode($sanitized_content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-		
-		if ($sanitized_json === false) {
-			$file['error'] = __('Could not process JSON file.', 'wp-baseline');
-			return $file;
-		}
-
-		// Write the sanitized content back to the temporary file
-		if (file_put_contents($file['tmp_name'], $sanitized_json) === false) {
-			$file['error'] = __('Could not save sanitized JSON file.', 'wp-baseline');
-			return $file;
-		}
-
 		return $file;
-	}
-
-	/**
-	 * Recursively sanitize JSON content.
-	 * 
-	 * @param mixed $data The data to sanitize.
-	 * @return mixed Sanitized data.
-	 */
-	private function sanitize_json_content($data)
-	{
-		if (is_array($data)) {
-			$sanitized = [];
-			foreach ($data as $key => $value) {
-				// Sanitize array keys
-				$sanitized_key = sanitize_text_field($key);
-				$sanitized[$sanitized_key] = $this->sanitize_json_content($value);
-			}
-			return $sanitized;
-		}
-
-		if (is_string($data)) {
-			// Remove potentially dangerous content
-			$data = $this->remove_dangerous_content($data);
-			return sanitize_textarea_field($data);
-		}
-
-		if (is_numeric($data)) {
-			return $data;
-		}
-
-		if (is_bool($data)) {
-			return $data;
-		}
-
-		if (is_null($data)) {
-			return $data;
-		}
-
-		// For any other type, convert to string and sanitize
-		return sanitize_textarea_field((string) $data);
-	}
-
-	/**
-	 * Remove potentially dangerous content from strings.
-	 * 
-	 * @param string $content The content to clean.
-	 * @return string Cleaned content.
-	 */
-	private function remove_dangerous_content($content)
-	{
-		// Remove script tags and their content
-		$content = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi', '', $content);
-		
-		// Remove javascript: protocol
-		$content = preg_replace('/javascript:/i', '', $content);
-		
-		// Remove data: protocol (except for common safe formats)
-		$content = preg_replace('/data:(?!image\/png|image\/jpg|image\/jpeg|image\/gif|image\/webp|image\/svg\+xml)/i', '', $content);
-		
-		// Remove vbscript: protocol
-		$content = preg_replace('/vbscript:/i', '', $content);
-		
-		// Remove on* event handlers
-		$content = preg_replace('/\bon\w+\s*=/i', '', $content);
-		
-		return $content;
 	}
 }
