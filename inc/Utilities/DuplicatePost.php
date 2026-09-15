@@ -137,11 +137,11 @@ class DuplicatePost
 	{
 		$post_type_object = get_post_type_object($post->post_type);
 
-		if (!$post_type_object || !isset($post_type_object->cap->edit_posts)) {
+		if (!$post_type_object) {
 			return false;
 		}
 
-		$can = current_user_can($post_type_object->cap->edit_posts);
+		$can = current_user_can('edit_post', $post->ID);
 
 		/**
 		 * Whether a specific post may be duplicated.
