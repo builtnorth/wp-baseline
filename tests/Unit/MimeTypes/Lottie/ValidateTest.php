@@ -104,6 +104,69 @@ class ValidateTest extends WPMockTestCase {
 	}
 
 	/**
+	 * Test a ZIP with path-traversal entry names is rejected.
+	 */
+	public function test_validate_lottie_archive_rejects_path_traversal() {
+		$path = $this->make_zip( [
+			'manifest.json'          => '{"generator":"test"}',
+			'animations/data.json'   => '{"v":"5.0.0","layers":[]}',
+			'animations/../../x.txt' => 'traversal',
+		] );
+
+		$validate = new Validate();
+		$result = $this->invoke( $validate, 'validate_lottie_archive', [ $path ] );
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test a ZIP that includes an executable-ish member is rejected.
+	 */
+	public function test_validate_lottie_archive_rejects_php_member() {
+		$path = $this->make_zip( [
+			'manifest.json'        => '{"generator":"test"}',
+			'animations/data.json' => '{"v":"5.0.0","layers":[]}',
+			'shell.php'            => '<?php echo 1;',
+		] );
+
+		$validate = new Validate();
+		$result = $this->invoke( $validate, 'validate_lottie_archive', [ $path ] );
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test required JSON members must actually decode (names alone fail).
+	 */
+	public function test_validate_lottie_archive_rejects_invalid_manifest_json() {
+		$path = $this->make_zip( [
+			'manifest.json'        => 'not-json',
+			'animations/data.json' => '{"v":"5.0.0","layers":[]}',
+		] );
+
+		$validate = new Validate();
+		$result = $this->invoke( $validate, 'validate_lottie_archive', [ $path ] );
+
+		$this->assertFalse( $result );
+	}
+
+	/**
+	 * Test a legitimate images/ asset alongside the required entries still passes.
+	 */
+	public function test_validate_lottie_archive_allows_image_assets() {
+		$path = $this->make_zip( [
+			'manifest.json'          => '{"generator":"test"}',
+			'animations/data.json'   => '{"v":"5.0.0","layers":[]}',
+			'images/frame.png'       => 'fakepng',
+		] );
+
+		$validate = new Validate();
+		$result = $this->invoke( $validate, 'validate_lottie_archive', [ $path ] );
+
+		$this->assertTrue( $result );
+	}
+
+	/**
 	 * Build a temp ZIP file with the given entries and return its path.
 	 *
 	 * @param array<string, string> $entries Relative path => file contents.

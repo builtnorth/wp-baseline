@@ -58,6 +58,57 @@ class SanitizeTest extends WPMockTestCase {
 	}
 
 	/**
+	 * Test a .json file with a spoofed non-JSON Content-Type is still validated.
+	 */
+	public function test_sanitize_json_files_keys_off_extension_when_type_spoofed() {
+		WP_Mock::userFunction( 'current_user_can' )->andReturn( true );
+		WP_Mock::onFilter( 'wpbaseline_mime_upload_capability' )->with( 'manage_options', 'json' )->reply( 'manage_options' );
+		WP_Mock::userFunction( '__' )->andReturnUsing( function ( $text ) {
+			return $text;
+		} );
+
+		$path = $this->make_temp_file( '{not valid json' );
+
+		$file = [
+			'name'     => 'evil.json',
+			'type'     => 'text/plain',
+			'tmp_name' => $path,
+			'error'    => 0,
+			'size'     => 20,
+		];
+
+		$sanitize = new Sanitize();
+		$result = $sanitize->sanitize_json_files( $file );
+
+		$this->assertNotSame( 0, $result['error'] );
+		$this->assertSame( 'Invalid JSON file format.', $result['error'] );
+	}
+
+	/**
+	 * Test declared application/json without a .json extension is still validated.
+	 */
+	public function test_sanitize_json_files_keys_off_declared_type() {
+		WP_Mock::userFunction( 'current_user_can' )->andReturn( true );
+		WP_Mock::onFilter( 'wpbaseline_mime_upload_capability' )->with( 'manage_options', 'json' )->reply( 'manage_options' );
+
+		$original = '{"ok":true}';
+		$path = $this->make_temp_file( $original );
+
+		$file = [
+			'name'     => 'data.txt',
+			'type'     => 'application/json',
+			'tmp_name' => $path,
+			'error'    => 0,
+			'size'     => strlen( $original ),
+		];
+
+		$sanitize = new Sanitize();
+		$result = $sanitize->sanitize_json_files( $file );
+
+		$this->assertSame( 0, $result['error'] );
+	}
+
+	/**
 	 * Test a well-formed JSON file passes through with content untouched.
 	 *
 	 * A prior version re-encoded and mutated string content via a

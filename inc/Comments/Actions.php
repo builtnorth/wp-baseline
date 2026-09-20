@@ -185,10 +185,38 @@ class Actions
 
 	/**
 	 * Disable comment feeds.
+	 *
+	 * Hides the <link> discovery tag and 404s any comment feed request
+	 * (site-wide /comments/feed/, post comment feeds, etc.).
 	 */
 	public function disable_comment_feeds()
 	{
 		add_filter('feed_links_show_comments_feed', '__return_false');
+		add_action('template_redirect', [$this, 'block_comment_feed_requests'], 1);
+	}
+
+	/**
+	 * Return 404 for comment feed URLs when comments are disabled.
+	 */
+	public function block_comment_feed_requests()
+	{
+		if (!function_exists('is_comment_feed') || !is_comment_feed()) {
+			return;
+		}
+
+		global $wp_query;
+		if ($wp_query instanceof \WP_Query) {
+			$wp_query->set_404();
+		}
+
+		status_header(404);
+		nocache_headers();
+
+		wp_die(
+			esc_html__('Comment feeds are disabled.', 'wp-baseline'),
+			esc_html__('Not Found', 'wp-baseline'),
+			['response' => 404]
+		);
 	}
 
 	/**

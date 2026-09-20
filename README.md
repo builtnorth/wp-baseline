@@ -208,19 +208,19 @@ To enable JSON uploads:
 add_filter('wpbaseline_enable_json_uploads', '__return_true');
 ```
 
-JSON uploads are only checked for well-formed structure — `application/json`
-is never executed by a browser or server, so there is nothing an upload-time
-transform can safely do to make it "sanitized" the way SVG sanitization
-does. Content is validated but never rewritten, so this filter has no
-effect on JSON content, only on whether the well-formed check runs at all:
+JSON uploads are checked for well-formed structure by default (and the
+`manage_options` capability is re-checked on the upload prefilter).
+`application/json` is never executed by a browser or server, so there is
+nothing an upload-time transform can safely do to make it "sanitized" the
+way SVG sanitization does — content is validated but never rewritten.
+Detection keys off the `.json` extension or a declared `application/json`
+type so a spoofed Content-Type cannot skip the check.
+
+To disable the structural check (not recommended):
 
 ```php
-add_filter('wpbaseline_sanitize_json_uploads', '__return_true');
+add_filter('wpbaseline_sanitize_json_uploads', '__return_false');
 ```
-
-**Note:** unlike Lottie validation below, this defaults to `false` even
-when JSON uploads are enabled — a site that enables JSON uploads but never
-sets this filter accepts any file content with no structural check at all.
 
 To enable Lottie uploads:
 
@@ -229,12 +229,15 @@ add_filter('wpbaseline_enable_lottie_uploads', '__return_true');
 ```
 
 Lottie validation runs automatically once Lottie uploads are enabled
-(default `true`, unlike JSON's sanitize filter above). A `.lottie` upload
-must be either valid Lottie JSON, or a real [dotLottie](https://dotlottie.io/)
-ZIP archive containing a `manifest.json` and an `animations/` directory —
-an arbitrary file renamed to `.lottie` is rejected. Archive validation
-requires the `zip` PHP extension; without it, non-JSON `.lottie` uploads
-are rejected (fails closed).
+(default `true`). A `.lottie` upload must be either valid Lottie JSON, or
+a real [dotLottie](https://dotlottie.io/) ZIP archive containing a
+`manifest.json` and an `animations/` directory — an arbitrary file renamed
+to `.lottie` is rejected. Archive members with path traversal (`..`,
+absolute paths) or executable-ish extensions (e.g. `.php`, `.exe`,
+`.htaccess`) are rejected even when the required names are present; the
+manifest and at least one animations JSON entry must also be well-formed
+JSON. Archive validation requires the `zip` PHP extension; without it,
+non-JSON `.lottie` uploads are rejected (fails closed).
 
 To disable Lottie validation:
 

@@ -25,8 +25,9 @@ class Sanitize
 	 */
 	public function init()
 	{
-		// Only add sanitization if explicitly enabled (opt-in)
-		if (apply_filters('wpbaseline_sanitize_json_uploads', false)) {
+		// Structural + capability check runs by default when JSON uploads
+		// are enabled. Sites can opt out with __return_false.
+		if (apply_filters('wpbaseline_sanitize_json_uploads', true)) {
 			add_filter('wp_handle_upload_prefilter', [$this, 'sanitize_json_files']);
 		}
 	}
@@ -47,13 +48,18 @@ class Sanitize
 	 * This now only confirms the upload is well-formed JSON and leaves
 	 * content untouched.
 	 *
+	 * Detection keys off extension or declared MIME (same pattern as SVG)
+	 * so a spoofed Content-Type cannot skip the check.
+	 *
 	 * @param array $file File upload data.
 	 * @return array Modified file data.
 	 */
 	public function sanitize_json_files($file)
 	{
-		// Only process JSON files
-		if ($file['type'] !== 'application/json') {
+		$extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+		$declared  = (string) ($file['type'] ?? '');
+
+		if ('json' !== $extension && 'application/json' !== $declared) {
 			return $file;
 		}
 
@@ -62,8 +68,13 @@ class Sanitize
 			return $file;
 		}
 
-		// Read the file content
-		$content = file_get_contents($file['tmp_name']);
+		$tmp_name = (string) ($file['tmp_name'] ?? '');
+		if ('' === $tmp_name || !is_readable($tmp_name)) {
+			$file['error'] = __('Could not read JSON file.', 'wp-baseline');
+			return $file;
+		}
+
+		$content = file_get_contents($tmp_name);
 
 		if ($content === false) {
 			$file['error'] = __('Could not read JSON file.', 'wp-baseline');

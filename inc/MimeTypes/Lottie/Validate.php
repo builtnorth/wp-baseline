@@ -163,6 +163,10 @@ class Validate
 	 * manifest.json and an animations/ directory), not just any binary
 	 * wearing a .lottie extension.
 	 *
+	 * Also rejects path-traversal entry names and members with
+	 * executable-ish extensions, and smoke-checks that the required
+	 * JSON members are well-formed (names alone are not enough).
+	 *
 	 * @param string $tmp_name Path to the uploaded file.
 	 * @return bool True if the archive has the expected dotLottie structure.
 	 */
@@ -184,9 +188,25 @@ class Validate
 
 		$has_manifest = false;
 		$has_animations = false;
+		$animation_json_entry = null;
 
 		for ($i = 0; $i < $zip->numFiles; $i++) {
 			$entry_name = $zip->getNameIndex($i);
+
+			if (false === $entry_name || '' === $entry_name) {
+				$zip->close();
+				return false;
+			}
+
+			// Directory markers are fine; only file members are policed.
+			if (str_ends_with($entry_name, '/')) {
+				continue;
+			}
+
+			if ($this->is_unsafe_zip_entry_name($entry_name)) {
+				$zip->close();
+				return false;
+			}
 
 			if ('manifest.json' === $entry_name) {
 				$has_manifest = true;
@@ -194,12 +214,100 @@ class Validate
 
 			if (0 === strpos($entry_name, 'animations/')) {
 				$has_animations = true;
+				if (null === $animation_json_entry && str_ends_with(strtolower($entry_name), '.json')) {
+					$animation_json_entry = $entry_name;
+				}
 			}
+		}
+
+		if (!$has_manifest || !$has_animations || null === $animation_json_entry) {
+			$zip->close();
+			return false;
+		}
+
+		// Names alone aren't enough — required JSON members must decode.
+		if (!$this->zip_entry_is_json($zip, 'manifest.json')) {
+			$zip->close();
+			return false;
+		}
+
+		if (!$this->zip_entry_is_json($zip, $animation_json_entry)) {
+			$zip->close();
+			return false;
 		}
 
 		$zip->close();
 
-		return $has_manifest && $has_animations;
+		return true;
+	}
+
+	/**
+	 * Whether a ZIP entry name is unsafe (traversal or executable-ish).
+	 *
+	 * @param string $entry_name Archive member path.
+	 * @return bool
+	 */
+	private function is_unsafe_zip_entry_name($entry_name)
+	{
+		$normalized = str_replace('\\', '/', $entry_name);
+
+		if ('' === $normalized || '/' === $normalized[0]) {
+			return true;
+		}
+
+		foreach (explode('/', $normalized) as $segment) {
+			if ('..' === $segment) {
+				return true;
+			}
+		}
+
+		$basename = strtolower(basename($normalized));
+
+		// Hidden Apache config dropped into the archive.
+		if ('.htaccess' === $basename || '.htpasswd' === $basename) {
+			return true;
+		}
+
+		$extension = strtolower(pathinfo($basename, PATHINFO_EXTENSION));
+		if ('' === $extension) {
+			return false;
+		}
+
+		$dangerous = [
+			'php', 'phtml', 'phar', 'pht', 'phps', 'pgif',
+			'exe', 'sh', 'bash', 'bat', 'cmd', 'cgi', 'pl', 'py', 'rb',
+			'js', 'mjs', 'shtml',
+		];
+
+		if (in_array($extension, $dangerous, true)) {
+			return true;
+		}
+
+		// php7, php81, php74, etc.
+		if (1 === preg_match('/^php\d+$/', $extension)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Read a ZIP entry and confirm it is well-formed JSON.
+	 *
+	 * @param \ZipArchive $zip        Open archive.
+	 * @param string      $entry_name Member path.
+	 * @return bool
+	 */
+	private function zip_entry_is_json(\ZipArchive $zip, $entry_name)
+	{
+		$contents = $zip->getFromName($entry_name);
+		if (false === $contents || '' === $contents) {
+			return false;
+		}
+
+		json_decode($contents, true);
+
+		return JSON_ERROR_NONE === json_last_error();
 	}
 
 	/**
