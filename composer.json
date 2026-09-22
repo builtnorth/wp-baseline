@@ -28,10 +28,10 @@
   },
   "autoload": {
     "files": [
-      "bootstrap/register.php"
+      "register.php"
     ],
     "psr-4": {
-      "BuiltNorth\\WPBaseline\\": "inc/"
+      "BuiltNorth\\WPBaseline\\": "inc/classes/"
     }
   },
   "autoload-dev": {
