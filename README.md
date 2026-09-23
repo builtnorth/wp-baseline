@@ -21,8 +21,8 @@ This library is meant to be dropped into a theme or plugin via composer.
 2. In your main plugin file or theme's functions.php, add:
 
 ```php
-if (class_exists('BuiltNorth\WPBaseline\App')) {
-    $baseline = BuiltNorth\WPBaseline\App::instance();
+if (class_exists('BuiltNorth\WPBaseline\Baseline')) {
+    $baseline = BuiltNorth\WPBaseline\Baseline::instance();
     $baseline->boot();
 }
 ```

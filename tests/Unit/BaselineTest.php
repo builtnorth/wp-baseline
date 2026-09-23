@@ -1,20 +1,20 @@
 <?php
 /**
- * Tests for the main App class
+ * Tests for the main Baseline class
  *
  * @package BuiltNorth\WPBaseline\Tests\Unit
  */
 
 namespace BuiltNorth\WPBaseline\Tests\Unit;
 
-use BuiltNorth\WPBaseline\App;
+use BuiltNorth\WPBaseline\Baseline;
 use BuiltNorth\WPBaseline\Tests\WPMockTestCase;
 use WP_Mock;
 
 /**
- * App test case
+ * Baseline test case
  */
-class AppTest extends WPMockTestCase {
+class BaselineTest extends WPMockTestCase {
 
 	/**
 	 * Common mocks for Comments\Actions::init() side effects during boot.
@@ -28,14 +28,14 @@ class AppTest extends WPMockTestCase {
 	}
 
 	/**
-	 * Test that App is a singleton
+	 * Test that Baseline is a singleton
 	 */
 	public function test_app_is_singleton() {
-		$instance1 = App::instance();
-		$instance2 = App::instance();
+		$instance1 = Baseline::instance();
+		$instance2 = Baseline::instance();
 		
 		$this->assertSame( $instance1, $instance2 );
-		$this->assertInstanceOf( App::class, $instance1 );
+		$this->assertInstanceOf( Baseline::class, $instance1 );
 	}
 
 	/**
@@ -48,11 +48,11 @@ class AppTest extends WPMockTestCase {
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
 
-		$app = App::instance();
+		$app = Baseline::instance();
 		$app->boot();
 
 		// Verify app was booted
-		$this->assertInstanceOf( App::class, $app );
+		$this->assertInstanceOf( Baseline::class, $app );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class AppTest extends WPMockTestCase {
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
 
-		$app = App::instance();
+		$app = Baseline::instance();
 		$app->boot();
 
 		// The cleanup module should be registered
@@ -80,7 +80,7 @@ class AppTest extends WPMockTestCase {
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
 
-		$app = App::instance();
+		$app = Baseline::instance();
 		$app->boot();
 
 		// The security module should be registered
@@ -96,7 +96,7 @@ class AppTest extends WPMockTestCase {
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
 
-		$app = App::instance();
+		$app = Baseline::instance();
 		$app->boot();
 
 		// The mime types module should be registered
@@ -112,7 +112,7 @@ class AppTest extends WPMockTestCase {
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
 
-		$app = App::instance();
+		$app = Baseline::instance();
 		$app->boot();
 
 		// The utilities module should be registered
@@ -128,7 +128,7 @@ class AppTest extends WPMockTestCase {
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( true );
 
-		$app = App::instance();
+		$app = Baseline::instance();
 		$app->boot();
 
 		// Comments module should be registered when filter returns true
@@ -144,7 +144,7 @@ class AppTest extends WPMockTestCase {
 			->with( 'wpbaseline_disable_comments', false )
 			->andReturn( false );
 
-		$app = App::instance();
+		$app = Baseline::instance();
 		$app->boot();
 
 		// Comments module should not be registered when filter returns false
